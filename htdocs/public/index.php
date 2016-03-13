@@ -3,6 +3,7 @@
 require_once('pm/Loader.php');
 pm_Loader::registerAutoload();
 pm_Bootstrap::init();
+pm_Context::init('harvard');
 
 // Authentication
 /*if (!isset($_GET['authToken']) || $_GET['authToken'] !== pm_Settings::get('authToken'))
