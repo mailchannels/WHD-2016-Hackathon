@@ -28,5 +28,23 @@ class IndexController extends pm_Controller_Action
     }
 
     public function configurationAction() {
+        $this->view->token = pm_Settings::get('authToken');
+        $this->view->actionConfig = new Modules_Harvard_ActionConfig();
+    }
+
+    public function genkeyAction() {
+        $key = Modules_Harvard_Helper::genRandHash();
+        pm_Settings::set('authToken', $key);
+        $this->_forward('configuration');
+    }
+
+    public function addactionAction() {
+
+        $config = new Modules_Harvard_ActionConfig;
+        if (isset($_POST['event']) && isset($_POST['action'])) {
+            $config->addAction($_POST['event'], $_POST['action']);
+        }
+
+        $this->_forward('configuration');
     }
 }

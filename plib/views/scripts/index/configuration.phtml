@@ -8,6 +8,12 @@
 
 echo $this->renderTabs($this->tabs);
 
+// TODO: Can we use the URL helper?
+$entryPoint  = !empty($_SERVER['REQUEST_SCHEME']) ? $_SERVER['REQUEST_SCHEME'] : 'http';
+$entryPoint .= '://' . $_SERVER['HTTP_HOST'];
+$entryPoint .=  '/modules/harvard/public/index.php';
+$entryPoint .= '?auth_token=' . $this->token;
+
 ?>
 
 <!-- Latest compiled and minified CSS -->
@@ -27,15 +33,27 @@ echo $this->renderTabs($this->tabs);
 </style>
 
 <h3><?php echo $this->lmsg('api-key') ?></h3>
+<form class="form-horizontal" action="<?php echo $this->url(array('controller' => 'index', 'action' => 'genkey')); ?>">
+    <div class="form-group">
+        <label for="api-key">API Key:</label>
 
+        <input type="text" readonly size="40" name="token" value="<?php echo $this->token; ?>" id="api-key"/>
+        <button type="submit" class="btn input-group-addon">Generate</button>
+    </div>
+    <div class="form-group">
+        <label for="api-key">Entry point:</label>
+
+        <input type="text" readonly size="60" name="token" value="<?php echo $entryPoint; ?>" id="api-key"/>
+    </div>
+</form>
 
 <hr/>
 <h3><?php echo $this->lmsg('add-action') ?></h3>
-<div class="form-inline">
+<form class="form-inline" action="<?php echo $this->url(array('controller' => 'index', 'action' => 'addAction')); ?>" method="post">
     <label>
         <small>Event</small>
         <br/>
-        <select>
+        <select name="event">
             <option value="*">All Events</option>
             <option value="tag_test">User is sending Spam</option>
             <option>User is sending to invalid recipients</option>
@@ -45,12 +63,20 @@ echo $this->renderTabs($this->tabs);
     <label>
         <small>Action</small>
         <br/>
-        <select>
+        <select name="action">
+<!--
             <option>Throttle Sender</option>
             <option>Throttle Domain</option>
             <option>Block Sender</option>
+-->
             <option>Block Domain</option>
         </select>
     </label>
     <button class="btn btn-default btn-xs">Add</button>
-</div>
+</form>
+
+<?php
+
+foreach ($this->actionConfig as $item) {
+    echo sprintf("%s => %s<br/>", $item['event'], $item['action']);
+}
