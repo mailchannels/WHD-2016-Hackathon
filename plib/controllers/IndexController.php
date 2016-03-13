@@ -5,7 +5,7 @@ class IndexController extends pm_Controller_Action
     public function init() {
         parent::init();
         // Init title for all actions
-        $this->view->pageTitle = pm_Locale::lmsg('Harvard');
+        $this->view->pageTitle = "Project Harvard";
         // Init tabs for all actions
         $this->view->tabs = array(
             array(
