@@ -26,20 +26,20 @@ echo $this->renderTabs($this->tabs);
     }
 </style>
 
-<h3>API Key</h3>
+<h3><?php echo $this->lmsg('api-key') ?></h3>
 
 
 <hr/>
-<h3>Add Action</h3>
+<h3><?php echo $this->lmsg('add-action') ?></h3>
 <div class="form-inline">
     <label>
         <small>Event</small>
         <br/>
         <select>
-            <option>All Events</option>
-            <option>Domain is sending Spam</option>
-            <option>Domain is sending to invalid recipients</option>
-            <option>Domain is generating complaints from receivers</option>
+            <option value="*">All Events</option>
+            <option value="tag_test">User is sending Spam</option>
+            <option>User is sending to invalid recipients</option>
+            <option>User is generating complaints from receivers</option>
         </select>
     </label>
     <label>

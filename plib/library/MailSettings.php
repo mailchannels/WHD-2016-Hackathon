@@ -31,6 +31,7 @@ class Modules_Harvard_MailSettings
     }
 
     function setMailDomainStatus($domain, $action) {
+        pm_Log::debug("setMailDomainStatus: $domain => $action");
         $site_id = Modules_Harvard_MailSettings::getIdFromDomain($domain);
 
         $request = <<<APICALL
@@ -95,7 +96,7 @@ APICALL;
             $domains = json_decode($domains_json);
         }
         if( $domains == null ) {
-            pm_Log.err("Could not decode list of blocked domains($domains_json)");
+            pm_Log::err("Could not decode list of blocked domains($domains_json)");
             return null;
         }
 

@@ -10,6 +10,8 @@ class Modules_Harvard_Receiver
 {
     public function processJson($data)
     {
+        pm_Log::debug(print_r($data, true));
+
         if (isset($data['envelope_sender']))
         {
             $sender = $data['envelope_sender'];

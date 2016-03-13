@@ -10,5 +10,6 @@
 $messages = array(
     'harvard' => 'Harvard',
     'blocked' => 'Blockierte Domains',
-    'configuration' => 'Konfiguration'
+    'configuration' => 'Konfiguration',
+    'api_key' => 'API-Schlüssel'
 );

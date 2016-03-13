@@ -21,16 +21,12 @@ class IndexController extends pm_Controller_Action
 
     public function indexAction()
     {
-        //echo Modules_Harvard_MailSettings::disableMailDomain('mailchannels.com');
-
         $this->_forward('blocked');
     }
 
     public function blockedAction() {
-
     }
 
     public function configurationAction() {
-
     }
 }
