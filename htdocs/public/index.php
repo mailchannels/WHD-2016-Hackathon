@@ -5,10 +5,10 @@ pm_Loader::registerAutoload();
 pm_Bootstrap::init();
 
 // Authentication
-if (!isset($_GET['authToken']) || $_GET['authToken'] !== pm_Settings::get('authToken'))
+/*if (!isset($_GET['authToken']) || $_GET['authToken'] !== pm_Settings::get('authToken'))
 {
     Modules_Harvard_Helper::error('Invalid auth token supplied.', 403);
-}
+}*/
 
 // Check if the request has the right form.
 if ($_SERVER['REQUEST_METHOD'] !== 'POST')
