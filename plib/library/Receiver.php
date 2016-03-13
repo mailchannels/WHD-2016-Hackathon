@@ -18,7 +18,6 @@ class Modules_Harvard_Receiver
      */
     public function processJson($data)
     {
-        var_dump($data);
         if (isset($data['envelope_sender']))
         {
             $sender = $data['envelope_sender'];

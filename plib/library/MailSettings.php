@@ -44,7 +44,7 @@ class Modules_Harvard_MailSettings
     private function setMailUserStatus($domain, $user, $enabled = false) {
         $site_id = $this->getIdFromDomain($domain);
 
-        $enabled = $enabled ? 'true' : 'false';
+        $setEnabled = $enabled ? 'true' : 'false';
 
         $request = <<<APICALL
             <mail>
@@ -55,7 +55,7 @@ class Modules_Harvard_MailSettings
                       <mailname>
                           <name>$user</name>
                           <mailbox>
-                              <enabled>$enabled</enabled>
+                              <enabled>$setEnabled</enabled>
                           </mailbox>
                       </mailname>
                   </filter>
@@ -64,16 +64,21 @@ class Modules_Harvard_MailSettings
             </mail>
 APICALL;
         $response = pm_ApiRpc::getService()->call($request);
-        $status = $response->mail->update->set->result->status === "ok";
+        $status = $response->mail->update->set->result->status == "ok";
 
         if( $status ) {
-            pm_Log::debug("$user@$domain's mailbox status was set to $enabled");
+            pm_Log::debug("$user@$domain's mailbox status was set to $setEnabled");
+
             if( !$enabled ) {
                 // TODO: $this->recordDisabledMailbox($domain, $user);
             }
         }
         else {
-            // TODO: If this fails, look for aliases!
+            $trueName = $this->getMailFromAlias($site_id, $user);
+
+            if ($trueName !== false) {
+                $this->setMailUserStatus($domain, $trueName, $enabled);
+            }
 
             pm_Log::err("$user@$domain's mailbox status could not be set");
         }
@@ -183,6 +188,35 @@ APICALL;
         $response = pm_ApiRpc::getService()->call($request);
         return $response->site->get->result->id;
 
+    }
+
+    public function getMailFromAlias($siteId, $alias)
+    {
+        $request = <<<APICALL
+<mail>
+<get_info>
+   <filter>
+      <site-id>$siteId</site-id>
+   </filter>
+    <aliases/>
+</get_info>
+</mail>
+APICALL;
+        $response = pm_ApiRpc::getService()->call($request);
+
+        $mailBoxes = $response->xpath('mail/get_info/result');
+
+        foreach ($mailBoxes as $mailBox) {
+            $aliases = $mailBox->xpath('mailname/alias');
+
+            for ($i = 0; $i < count($aliases); $i++) {
+                if ((string) $aliases[$i] === $alias) {
+                    return (string) $mailBox->mailname->name;
+                }
+            }
+        }
+
+        return false;
     }
 
 }
