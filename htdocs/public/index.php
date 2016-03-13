@@ -6,10 +6,10 @@ pm_Bootstrap::init();
 pm_Context::init('harvard');
 
 // Authentication
-/*if (!isset($_GET['authToken']) || $_GET['authToken'] !== pm_Settings::get('authToken'))
+if (!isset($_GET['auth_token']) || $_GET['auth_token'] !== pm_Settings::get('authToken'))
 {
     Modules_Harvard_Helper::error('Invalid auth token supplied.', 403);
-}*/
+}
 
 // Check if the request has the right form.
 if ($_SERVER['REQUEST_METHOD'] !== 'POST')

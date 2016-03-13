@@ -8,6 +8,12 @@
 
 echo $this->renderTabs($this->tabs);
 
+// TODO: Can we use the URL helper?
+$entryPoint  = !empty($_SERVER['REQUEST_SCHEME']) ? $_SERVER['REQUEST_SCHEME'] : 'http';
+$entryPoint .= '://' . $_SERVER['HTTP_HOST'];
+$entryPoint .=  '/modules/harvard/public/index.php';
+$entryPoint .= '?auth_token=' . $this->token;
+
 ?>
 
 <!-- Latest compiled and minified CSS -->
@@ -27,7 +33,19 @@ echo $this->renderTabs($this->tabs);
 </style>
 
 <h3>API Key</h3>
+<form class="form-horizontal" action="<?php echo $this->url(array('controller' => 'index', 'action' => 'genkey')); ?>">
+    <div class="form-group">
+        <label for="api-key">API Key:</label>
 
+        <input type="text" readonly size="40" name="token" value="<?php echo $this->token; ?>" id="api-key"/>
+        <button type="submit" class="btn input-group-addon">Generate</button>
+    </div>
+    <div class="form-group">
+        <label for="api-key">Entry point:</label>
+
+        <input type="text" readonly size="60" name="token" value="<?php echo $entryPoint; ?>" id="api-key"/>
+    </div>
+</form>
 
 <hr/>
 <h3>Add Action</h3>
