@@ -8,7 +8,9 @@
 
 echo $this->renderTabs($this->tabs);
 
-foreach( Modules_Harvard_MailSettings::getDisabledDomains() as $domain ) {
+$mailSettings = new Modules_Harvard_MailSettings;
+
+foreach( $mailSettings->getDisabledDomains() as $domain ) {
     echo "$domain <br />"; // TODO: link to domain's mail settings page?
 }
 
