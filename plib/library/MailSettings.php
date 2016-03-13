@@ -14,24 +14,82 @@ const disabled_mail_domains = 'disabled_mail_domains';
 
 class Modules_Harvard_MailSettings
 {
-    function hello() {
-        return "Hello world";
+    /**
+     * Disables the mailbox for a certain user.
+     *
+     * @param   string  $domain  The domain name the mail account belongs to.
+     * @param   string  $user    The user name to block.
+     */
+    public function disableMailUser($domain, $user) {
+        $this->setMailUserStatus($domain, $user, false);
     }
 
-    function disableMailUser() {
+    /**
+     * Enables the mailbox for a certain user.
+     *
+     * @param   string  $domain  The domain name the mail account belongs to.
+     * @param   string  $user    The user name to unblock.
+     */
+    public function enableMailUser($domain, $user) {
+        $this->setMailUserStatus($domain, $user, true);
+    }
+
+    /**
+     * Sets the mailbox status for a certain user.
+     *
+     * @param   string  $domain   The domain name the mail account belongs to.
+     * @param   string  $user     The user name.
+     * @param   bool    $enabled  Whether the mailbox should be enabled or disabled.
+     */
+    private function setMailUserStatus($domain, $user, $enabled = false) {
+        $site_id = $this->getIdFromDomain($domain);
+
+        $enabled = $enabled ? 'true' : 'false';
+
+        $request = <<<APICALL
+            <mail>
+            <update>
+               <set>
+                  <filter>
+                      <site-id>$site_id</site-id>
+                      <mailname>
+                          <name>$user</name>
+                          <mailbox>
+                              <enabled>$enabled</enabled>
+                          </mailbox>
+                      </mailname>
+                  </filter>
+               </set>
+            </update>
+            </mail>
+APICALL;
+        $response = pm_ApiRpc::getService()->call($request);
+        $status = $response->mail->update->set->result->status === "ok";
+
+        if( $status ) {
+            pm_Log::debug("$user@$domain's mailbox status was set to $enabled");
+            if( !$enabled ) {
+                // TODO: $this->recordDisabledMailbox($domain, $user);
+            }
+        }
+        else {
+            // TODO: If this fails, look for aliases!
+
+            pm_Log::err("$user@$domain's mailbox status could not be set");
+        }
 
     }
 
-    function enableMailDomain($domain) {
-        Modules_Harvard_MailSettings::setMailDomainStatus($domain, enable);
+    public function enableMailDomain($domain) {
+        $this->setMailDomainStatus($domain, enable);
     }
 
-    function disableMailDomain($domain) {
-        Modules_Harvard_MailSettings::setMailDomainStatus($domain, disable);
+    public function disableMailDomain($domain) {
+        $this->setMailDomainStatus($domain, disable);
     }
 
-    function setMailDomainStatus($domain, $action) {
-        $site_id = Modules_Harvard_MailSettings::getIdFromDomain($domain);
+    private function setMailDomainStatus($domain, $action) {
+        $site_id = $this->getIdFromDomain($domain);
 
         $request = <<<APICALL
             <mail>
@@ -49,7 +107,7 @@ APICALL;
         if( $status ) {
             pm_Log::debug("$domain status was set to $action");
             if( $action == disable ) {
-                Modules_Harvard_MailSettings::recordDisabledDomain($domain);
+                $this->recordDisabledDomain($domain);
             }
         }
         else {
@@ -57,8 +115,8 @@ APICALL;
         }
     }
 
-    function getMailDomainStatus($domain) {
-        $site_id = Modules_Harvard_MailSettings::getIdFromDomain($domain);
+    public function getMailDomainStatus($domain) {
+        $site_id = $this->getIdFromDomain($domain);
 
         $request = <<<APICALL
             <mail>
@@ -78,15 +136,15 @@ APICALL;
         return $status;
     }
 
-    function recordDisabledDomain($domain) {
-        $domains = Modules_Harvard_MailSettings::getDisabledDomains();
+    private function recordDisabledDomain($domain) {
+        $domains = $this->getDisabledDomains();
         if( !in_array($domain, $domains) ) {
             array_push($domains, $domain);
         }
         pm_Settings::set(disabled_mail_domains, json_encode($domains));
     }
 
-    function getDisabledDomains() {
+    public function getDisabledDomains() {
         $domains_json = pm_Settings::get(disabled_mail_domains);
         if( $domains_json == null ) {
             $domains = array();
@@ -100,7 +158,7 @@ APICALL;
         }
 
         function status($domain) {
-            return !Modules_Harvard_MailSettings::getMailDomainStatus($domain);
+            return !$this->getMailDomainStatus($domain);
         }
         // check to make sure they're still disabled:
         $domains = array_filter($domains, "status");
@@ -108,7 +166,7 @@ APICALL;
         return $domains;
     }
 
-    function getIdFromDomain($domain) {
+    private function getIdFromDomain($domain) {
         $request = <<<APICALL
             <site>
               <get>
