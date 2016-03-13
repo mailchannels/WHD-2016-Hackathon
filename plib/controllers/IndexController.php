@@ -35,7 +35,7 @@ class IndexController extends pm_Controller_Action
     public function genkeyAction() {
         $key = Modules_Harvard_Helper::genRandHash();
         pm_Settings::set('authToken', $key);
-        $this->_forward('configuration');
+        $this->_redirect('index/configuration');
     }
 
     public function addactionAction() {
@@ -45,6 +45,6 @@ class IndexController extends pm_Controller_Action
             $config->addAction($_POST['event'], $_POST['action']);
         }
 
-        $this->_forward('configuration');
+        $this->_redirect('index/configuration');
     }
 }

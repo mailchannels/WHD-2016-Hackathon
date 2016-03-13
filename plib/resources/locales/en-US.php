@@ -11,5 +11,5 @@ $messages = array(
     'blocked' => 'Blocked Domains',
     'configuration' => 'Configuration',
     'api-key' => 'API Key',
-    'add-action' => 'Add Action'
+    'add-action' => 'Event Actions'
 );
