@@ -17,7 +17,7 @@ class Modules_Harvard_MailSettings
     }
 
     function disableMailDomain($domain) {
-        $site_id = $this->getIdFromDomain($domain);
+        $site_id = Modules_Harvard_MailSettings::getIdFromDomain($domain);
 
         $request = <<<APICALL
             <mail>
