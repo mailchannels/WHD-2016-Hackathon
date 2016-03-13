@@ -6,6 +6,10 @@
  * Date: 2016-03-13
  * Time: 1:47 PM
  */
+
+const enabled = 'enable';
+const disable = 'disable';
+
 class Modules_Harvard_MailSettings
 {
     function hello() {
@@ -16,14 +20,22 @@ class Modules_Harvard_MailSettings
 
     }
 
+    function enableMailDomain($domain) {
+        Modules_Harvard_MailSettings::setMailDomainStatus($domain, enable);
+    }
+
     function disableMailDomain($domain) {
+        Modules_Harvard_MailSettings::setMailDomainStatus($domain, disable);
+    }
+
+    function setMailDomainStatus($domain, $action) {
         $site_id = Modules_Harvard_MailSettings::getIdFromDomain($domain);
 
         $request = <<<APICALL
             <mail>
-              <disable>
+              <$action>
                 <site-id>$site_id</site-id>
-              </disable>
+              </$action>
             </mail>
 APICALL;
 
