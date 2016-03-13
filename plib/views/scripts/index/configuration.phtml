@@ -7,3 +7,50 @@
  */
 
 echo $this->renderTabs($this->tabs);
+
+?>
+
+<!-- Latest compiled and minified CSS -->
+<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">-->
+<style>
+    .form-inline label {
+        display: inline-block;
+    }
+    .btn {
+        border-radius: 3px;
+        background-color: white;
+        border-color: lightgray;
+    }
+    .btn-xs {
+        height: 0.9em;
+    }
+</style>
+
+<h3>API Key</h3>
+
+
+<hr/>
+<h3>Add Action</h3>
+<div class="form-inline">
+    <label>
+        <small>Event</small>
+        <br/>
+        <select>
+            <option>All Events</option>
+            <option>Domain is sending Spam</option>
+            <option>Domain is sending to invalid recipients</option>
+            <option>Domain is generating complaints from receivers</option>
+        </select>
+    </label>
+    <label>
+        <small>Action</small>
+        <br/>
+        <select>
+            <option>Throttle Sender</option>
+            <option>Throttle Domain</option>
+            <option>Block Sender</option>
+            <option>Block Domain</option>
+        </select>
+    </label>
+    <button class="btn btn-default btn-xs">Add</button>
+</div>
