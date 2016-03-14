@@ -29,6 +29,9 @@ $entryPoint .= '?auth_token=' . $this->token;
         background-color: white;
         border-color: lightgray;
     }
+    h4 .btn {
+        vertical-align: inherit;
+    }
     thead td {
         padding-right: 8px;
         padding-bottom: 8px;
@@ -43,7 +46,7 @@ $entryPoint .= '?auth_token=' . $this->token;
     section {
         background-color: #f8f8f8;
         padding: 10px 20px;
-        margin-bottom: 10px;
+        margin-bottom: 20px;
         border: solid 1px #e8e8e8;
         border-radius: 3px;
     }
@@ -76,9 +79,12 @@ $entryPoint .= '?auth_token=' . $this->token;
                     <br/>
                     <select name="event" id="select-event">
                         <option value="*"><?php echo $this->lmsg('select-event-all') ?></option>
-                        <option value="tag_test"><?php echo $this->lmsg('select-event-spam') ?></option>
-                        <option><?php echo $this->lmsg('select-event-invalid-recipients') ?></option>
-                        <option><?php echo $this->lmsg('select-event-complaints') ?></option>
+                        <?php
+                        foreach ($this->availableEvents as $tag) {
+                            $description = $this->lmsg('select-event-' . $tag);
+                            echo "<option value='$tag'>$description</option>";
+                        }
+                        ?>
                     </select>
                 </td>
                 <td>
@@ -87,12 +93,12 @@ $entryPoint .= '?auth_token=' . $this->token;
                     </label>
                     <br/>
                     <select name="action" id="select-action">
-                        <!--
-                                    <option>Throttle Sender</option>
-                                    <option>Throttle Domain</option>
-                                    <option><?php echo $this->lmsg('select-action-block-sender') ?></option>
-                        -->
-                        <option><?php echo $this->lmsg('select-action-block-domain') ?></option>
+                        <?php
+                        foreach ($this->availableActions as $tag) {
+                            $description = $this->lmsg('select-action-' . $tag);
+                            echo "<option value='$tag'>$description</option>";
+                        }
+                        ?>
                     </select>
                 </td>
                 <td>
