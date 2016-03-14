@@ -52,7 +52,6 @@ class Modules_Harvard_MailSettings
     private function setMailUserStatus($domain, $user, $enabled = false)
     {
         $site_id = $this->getIdFromDomain($domain);
-
         $setEnabled = $enabled ? 'true' : 'false';
 
         $request = <<<APICALL
@@ -81,7 +80,7 @@ APICALL;
 
             if (!$enabled)
             {
-                // TODO: $this->recordDisabledMailbox($domain, $user);
+                $this->recordDisabledMailbox($site_id, $user);
             }
 
             return true;
@@ -179,6 +178,69 @@ APICALL;
         return $domain_results;
     }
 
+    /**
+     * Filters a given array of mailboxes to make sure that only mailboxes are contained,
+     * that are disabled in Plesk.
+     *
+     * @param   array  $boxes  The array to filter.
+     *
+     * @return  array|null  The filtered array on success, null on failure.
+     */
+    private function getMailBoxStatus($boxes)
+    {
+        if (!is_array($boxes))
+        {
+            return null;
+        }
+
+        if (empty($boxes))
+        {
+            return array();
+        }
+
+        $boxesNew = array();
+        $tmp = array();
+
+        $request = "<mail> <get_info> <filter>";
+
+        foreach ($boxes as $box)
+        {
+            $id = $box['domain_id'];
+            $name = $box['user'];
+
+            // Remember the site ID, because it won't appear in the XML answer.
+            $tmp[$name] = $id;
+
+            $request .= "<site-id>$id</site-id>";
+            $request .= "<name>$name</name>";
+        }
+
+        $request .= " </filter> <mailbox /> </get_info> </mail>";
+
+        $response = pm_ApiRpc::getService()->call($request);
+
+        $results = $response->xpath('mail/get_info/result');
+
+        foreach ($results as $result)
+        {
+            $user = (string) $result->mailname->name;
+            $enabled = (string) $result->mailname->mailbox->enabled;
+
+            $domain_id = $tmp[$user];
+
+            if ($enabled === 'false')
+            {
+                $box = array(
+                    'domain_id' => $domain_id,
+                    'user' => $user,
+                );
+                array_push($boxesNew, $box);
+            }
+        }
+
+        return $boxesNew;
+    }
+
     function recordDisabledDomain($domain_id, $domain_name) {
         $domains = $this->getDisabledDomains();
 
@@ -200,6 +262,84 @@ APICALL;
 
         pm_Log::err("Setting domains: " . implode($result));
         pm_Settings::set(disabled_mail_domains, json_encode($result));
+    }
+
+    /**
+     * Adds a mailbox to the stored list of disabled mailboxes.
+     *
+     * @param   int     $domain_id  ID of the site the mailbox belongs to.
+     * @param   string  $user       Blocked user.
+     *
+     * @return void
+     */
+    private function recordDisabledMailbox($domain_id, $user)
+    {
+        $accounts = $this->getDisabledMailboxes();
+
+        if (is_null($accounts))
+        {
+            pm_Log::err("Error recording mailbox $user (site ID: $domain_id)");
+
+            return null;
+        }
+
+        $box = array(
+            'domain_id' => $domain_id,
+            'user' => $user,
+        );
+
+        if (!$this->isRecordedMailbox($box, $accounts))
+        {
+            array_push($accounts, $box);
+        }
+
+        pm_Settings::set('disabled_mail_boxes', json_encode($accounts));
+    }
+
+    /**
+     * Checks if a given mailbox is already contained in the given list of mailboxes.
+     *
+     * @param   array  $box    The box to find. Scheme: array('domain_id => int, 'user' => string).
+     * @param   array  $boxes  The existing list of boxes.
+     *
+     * @return  bool  True if the box is already in the array, false otherwise.
+     */
+    private function isRecordedMailbox($box, $boxes)
+    {
+        foreach ($boxes as $b)
+        {
+            if ($b['domain_id'] === $box['domain_id'] && $b['user'] === $box['user'])
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Retrieves an array of all recorded disabled mailboxes,
+     * filtered such that only really disabled boxes are included.
+     *
+     * @return  array|null  Array of disabled mailboxes on success, null on failure.
+     */
+    public function getDisabledMailboxes()
+    {
+        $json = pm_Settings::get('disabled_mail_boxes');
+
+        if (!$json)
+        {
+            return array();
+        }
+
+        $boxes = json_decode($json, true);
+
+        if (!$json)
+        {
+            return null;
+        }
+
+        return $this->getMailBoxStatus($boxes);
     }
 
     /**
@@ -255,7 +395,7 @@ APICALL;
 
         $response = pm_ApiRpc::getService()->call($request);
 
-        return $response->site->get->result->id;
+        return (int) $response->site->get->result->id;
     }
 
     /**
