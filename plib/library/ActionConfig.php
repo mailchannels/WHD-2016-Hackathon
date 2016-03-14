@@ -62,8 +62,8 @@ class Modules_Harvard_ActionConfig implements IteratorAggregate {
             if (! (isset($item['event']) && isset($item['action']))) {
                 unset($config[$idx]);
             }
-            if (! (in_array($item['event'], array_keys(self::getAvailableEvents()))
-                    && in_array($item['action'], array_keys(self::getAvailableActions())))) {
+            if (! (in_array($item['event'], self::getAvailableEvents())
+                    && in_array($item['action'], self::getAvailableActions()))) {
                 unset($config[$idx]);
             }
         }
@@ -72,6 +72,7 @@ class Modules_Harvard_ActionConfig implements IteratorAggregate {
 
     public static function getAvailableEvents() {
         return [
+            'all',
             'spamming',
             'bad-recipients',
             'bounce-rate',
@@ -88,11 +89,11 @@ class Modules_Harvard_ActionConfig implements IteratorAggregate {
     }
 
     public static function eventDescription($tag) {
-        return self::getAvailableEvents()[$tag];
+        return pm_Locale::lmsg("select-event-$tag");
     }
 
     public static function actionDescription($tag) {
-        return self::getAvailableActions()[$tag];
+        return pm_Locale::lmsg("select-action-$tag");
     }
 
     /**

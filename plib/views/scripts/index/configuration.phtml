@@ -70,7 +70,7 @@ $entryPoint .= '?auth_token=' . $this->token;
 <section>
     <form class="form-inline" action="<?php echo $this->url(array('controller' => 'index', 'action' => 'addAction')); ?>" method="post">
         <table>
-            <tbody>
+            <thead>
             <tr>
                 <td>
                     <label for="select-event">
@@ -78,7 +78,6 @@ $entryPoint .= '?auth_token=' . $this->token;
                     </label>
                     <br/>
                     <select name="event" id="select-event">
-                        <option value="*"><?php echo $this->lmsg('select-event-all') ?></option>
                         <?php
                         foreach ($this->availableEvents as $tag) {
                             $description = $this->lmsg('select-event-' . $tag);
@@ -105,7 +104,8 @@ $entryPoint .= '?auth_token=' . $this->token;
                     <button class="btn btn-default" type="submit"><?php echo $this->lmsg('add-action') ?></button>
                 </td>
             </tr>
-
+            </thead>
+            <tbody>
             <?php
 
             foreach ($this->actionConfig as $item) {
