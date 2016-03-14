@@ -7,24 +7,5 @@
  */
 echo $this->partial('style.phtml');
 echo $this->renderTabs($this->tabs);
-?>
 
-<form method="post" class="list">
-<table class="harvard-table">
-    <tbody>
-    <?php
-
-    foreach ($this->blockedMailboxes as $blocked)
-    {
-        $domain = $blocked['domain_name'];
-        $user = $blocked['user'];
-
-        $url = '/smb/email-address/edit/id/' . $blocked['user_id'] . '/domainId/' . $blocked['domain_id'];
-        echo "<tr><td><a href='$url'>$user@$domain</a> </td>";
-        echo "<td><button class='btn btn-default' type='submit' name='unblock' value='$user@$domain'>{$this->lmsg('enable-mailbox-button')}</button>";
-    }
-
-    ?>
-    </tbody>
-</table>
-</form>
+echo $this->renderList($this->list);

@@ -7,29 +7,5 @@
  */
 echo $this->partial('style.phtml');
 echo $this->renderTabs($this->tabs);
-?>
 
-<form method="post" class="list">
-<table class="harvard-table">
-    <?php
-
-    if( empty($this->blockedDomains) ) {
-        echo "<tr><td>{$this->lmsg('no-domains-blocked')}</td></tr>";
-    }
-    else {
-        foreach ($this->blockedDomains as $blocked) {
-            $domain = $blocked['domain'];
-            $id = $blocked['id'];
-            $reason = $blocked['reason'];
-            echo "<tr><td><a href='/smb/mail-settings/edit/id/$id/domainId/$id'>$domain</a></td>";
-            echo "<td>$reason</td>";
-            echo "<td><button class='btn btn-default' type='submit' name='unblock' value='$domain'>{$this->lmsg('enable-domain-button')}</button>";
-        }
-    }
-
-    ?>
-
-</table>
-</form>
-
-
+echo $this->renderList($this->list);

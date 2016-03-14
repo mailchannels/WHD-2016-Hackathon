@@ -40,6 +40,20 @@ class Modules_Harvard_MailSettings
         $this->setMailUserStatus($domain, $user, true);
     }
 
+    public function enableMailboxes($addresses)
+    {
+        foreach ($addresses as $address)
+        {
+            if (preg_match('/(.*)\@(.*)/i', $address, $matches))
+            {
+                $username = $matches[1];
+                $domain = $matches[2];
+
+                $this->enableMailUser($domain, $username);
+            }
+        }
+    }
+
     /**
      * Sets the mailbox status for a certain user.
      *
@@ -207,8 +221,6 @@ APICALL;
         $boxesNew = array();
         $tmp = array();
 
-        $request = "<mail> <get_info> <filter>";
-
         foreach ($boxes as $box)
         {
             $id = $box['domain_id'];
@@ -217,21 +229,18 @@ APICALL;
             // Remember the site ID, because it won't appear in the XML answer.
             $tmp[$name] = array($id, $box['domain_name']);
 
+            $request = "<mail> <get_info> <filter>";
             $request .= "<site-id>$id</site-id>";
             $request .= "<name>$name</name>";
-        }
+            $request .= " </filter> <mailbox /> </get_info> </mail>";
 
-        $request .= " </filter> <mailbox /> </get_info> </mail>";
+            $response = pm_ApiRpc::getService()->call($request);
 
-        $response = pm_ApiRpc::getService()->call($request);
+            $result = $response->xpath('mail/get_info/result/mailname')[0];
 
-        $results = $response->xpath('mail/get_info/result');
-
-        foreach ($results as $result)
-        {
-            $user = (string) $result->mailname->name;
-            $userId = (int) $result->mailname->id;
-            $enabled = (string) $result->mailname->mailbox->enabled;
+            $user = (string) $result->name;
+            $userId = (int) $result->id;
+            $enabled = (string) $result->mailbox->enabled;
 
             $domain_id = $tmp[$user][0];
             $domain_name = $tmp[$user][1];

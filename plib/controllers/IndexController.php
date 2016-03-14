@@ -65,6 +65,8 @@ class IndexController extends pm_Controller_Action
                 return $i['domain'] != $_POST['unblock'];
             });
         }
+
+        $this->view->list = $this->getListDomains();
     }
 
     /**
@@ -75,14 +77,11 @@ class IndexController extends pm_Controller_Action
     public function blockedmailboxesAction()
     {
         $mailSettings = new Modules_Harvard_MailSettings;
-        $this->view->blockedMailboxes = $mailSettings->getDisabledMailboxes();
 
-        if (isset($_POST['unblock']))
-        {
+        if (isset($_POST['unblock'])) {
             $split = explode('@', $_POST['unblock'], 2);
 
-            if (count($split) === 2)
-            {
+            if (count($split) === 2) {
                 $user = $split[0];
                 $domain = $split[1];
 
@@ -90,12 +89,14 @@ class IndexController extends pm_Controller_Action
 
                 $this->view->blockedMailboxes = array_filter(
                     $this->view->blockedMailboxes,
-                    function($i) use($user, $domain) {
+                    function ($i) use ($user, $domain) {
                         return $i['domain_name'] !== $domain && $i['user'] !== $user;
                     }
                 );
             }
         }
+
+        $this->view->list = $this->getListMailboxes();
     }
 
     /**
@@ -142,5 +143,183 @@ class IndexController extends pm_Controller_Action
         }
 
         $this->_redirect('index/configuration');
+    }
+
+    public function getListMailboxes()
+    {
+        $mailSettings = new Modules_Harvard_MailSettings;
+        $disabledMailboxes = $mailSettings->getDisabledMailboxes();
+
+        $data = array_map(
+            function($e) {
+                return array(
+                    'mail' => '<a href="/smb/email-address/edit/id/' . $e['user_id'] . '/domainId/' . $e['domain_id'] . '">'
+                        . $e['user'] . '@' . $e['domain_name']
+                        . '</a>',
+                    'reason' => '',
+                    'user' => $e['user'],
+                    'domain' => $e['domain_name'],
+                );
+            },
+            $disabledMailboxes
+        );
+
+        $list = new pm_View_List_Simple($this->view, $this->_request);
+        $list->setData($data);
+        $list->setColumns(array(
+            pm_View_List_Simple::COLUMN_SELECTION,
+
+            'mail' => array(
+                'title' => 'Mail account',
+                'noEscape' => true,
+                'searchable' => true,
+            ),
+            'reason' => array(
+                'title' => 'Reason',
+                'searchable' => true,
+                'sortable' => false,
+            ),
+        ));
+        $list->setTools(array(
+            array(
+                'title' => $this->lmsg('enable-mailbox-button'),
+                'class' => 'sb-app-info',
+                'link' => '',
+                'execGroupOperation' => 'enable-mailboxes',
+            ),
+        ));
+
+        // Take into account listDataAction corresponds to the URL /list-data/
+        $list->setDataUrl(array('action' => 'list-mailboxes'));
+
+        return $list;
+    }
+
+    public function getListDomains()
+    {
+        $mailSettings = new Modules_Harvard_MailSettings;
+        $disabledDomains = $mailSettings->getDisabledDomains();
+
+        $data = array_map(
+            function($e) {
+                return array(
+                    'mail' => '<a href="/smb/mail-settings/edit/id/' . $e['id'] . '/domainId/' . $e['id'] . '">'
+                        . $e['domain']
+                        . '</a>',
+                    'reason' => $e['reason'],
+                    'domain' => $e['domain'],
+                );
+            },
+            $disabledDomains
+        );
+
+        $list = new pm_View_List_Simple($this->view, $this->_request);
+        $list->setData($data);
+        $list->setColumns(
+            array(
+                pm_View_List_Simple::COLUMN_SELECTION,
+
+                'mail' => array(
+                    'title' => 'Domain',
+                    'noEscape' => true,
+                    'searchable' => true,
+                ),
+                'reason' => array(
+                    'title' => 'Reason',
+                    'searchable' => true,
+                    'sortable' => false,
+                ),
+            )
+        );
+        $list->setTools(
+            array(
+                array(
+                    'title' => $this->lmsg('enable-domain-button'),
+                    'class' => 'sb-app-info',
+                    'link' => '',
+                    'execGroupOperation' => 'enable-domains',
+                ),
+            )
+        );
+
+        // Take into account listDataAction corresponds to the URL /list-data/
+        $list->setDataUrl(array('action' => 'list-domains'));
+
+        return $list;
+    }
+
+    public function enableMailboxesAction()
+    {
+        $ids = $this->_getParam('ids');
+
+        if (!$ids)
+        {
+            return null;
+        }
+
+        $list = $this->getListMailboxes();
+        $data = $list->fetchData()['data'];
+
+        $messages = array();
+
+        $mailSettings = new Modules_Harvard_MailSettings;
+
+        foreach ($ids as $id)
+        {
+            $id = (int) $id;
+            $mailSettings->enableMailUser($data[$id]['domain'], $data[$id]['user']);
+            $address = $data[$id]['user'] . '@' . $data[$id]['domain'];
+            $messages[] = ['status' => 'info', 'content' => "Mailbox $address was successfully enabled."];
+        }
+
+        $this->_helper->json(['status' => 'success', 'statusMessages' => $messages]);
+    }
+
+    public function enableDomainsAction()
+    {
+        $ids = $this->_getParam('ids');
+
+        if (!$ids)
+        {
+            return null;
+        }
+
+        $list = $this->getListDomains();
+        $data = $list->fetchData()['data'];
+
+        $messages = array();
+
+        $mailSettings = new Modules_Harvard_MailSettings;
+
+        foreach ($ids as $id)
+        {
+            $domain = $data[(int) $id]['domain'];
+            $mailSettings->enableMailDomain($domain);
+            $messages[] = ['status' => 'info', 'content' => "Domain $domain was successfully enabled."];
+        }
+
+        $this->_helper->json(['status' => 'success', 'statusMessages' => $messages]);
+    }
+
+    /**
+     * Handles list actions (ordering, searching,...) for mailboxes.
+     *
+     * @return void
+     */
+    public function listMailboxesAction()
+    {
+        $list = $this->getListMailboxes();
+        $this->_helper->json($list->fetchData());
+    }
+
+    /**
+     * Handles list actions (ordering, searching,...) for domains.
+     *
+     * @return void
+     */
+    public function listDomainsAction()
+    {
+        $list = $this->getListDomains();
+        $this->_helper->json($list->fetchData());
     }
 }

@@ -27,8 +27,10 @@ $messages = array(
     'select-action' => 'Aktion',
     'select-action-block-domain' => 'Mailversand und -empfang für die Domain deaktivieren',
     'select-action-block-sender' => 'Postfach des Absenders deaktivieren',
-    'title-remove-action' => 'entfernen Aktion',
+    'title-remove-action' => 'Aktion entfernen',
     'enable-domain-button' => 'Domain wieder aktivieren',
     'enable-mailbox-button' => 'Postfach wieder aktivieren',
-    'message-suspendet-site' => 'Es wurden Mailkonten wegen Spamverdacht deaktiviert',
+    'message-suspendet-site' => 'Es wurden Mailkonten wegen Spamverdachts deaktiviert',
+    'no-domains-blocked' => 'Momentan sind keine Domains gesperrt.',
+    'no-mailboxes-blocked' => 'Momentan sind keine Postfächer gesperrt.',
 );
