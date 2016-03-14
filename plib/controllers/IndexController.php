@@ -14,8 +14,13 @@ class IndexController extends pm_Controller_Action
      */
     public function init()
     {
-       // pm_Settings::set('disabled_mail_boxes', '{}');
         parent::init();
+
+        $mailSettings = new Modules_Harvard_MailSettings();
+        $disabledDomainsCount = count($mailSettings->getDisabledDomains());
+        $disabledMailboxesCount = count($mailSettings->getDisabledMailboxes());
+
+        pm_Log::debug("disabledMailboxes: $disabledMailboxesCount, disabledDomains: $disabledDomainsCount");
 
         // Init title for all actions
         $this->view->pageTitle = "Project Harvard";
@@ -23,11 +28,11 @@ class IndexController extends pm_Controller_Action
         // Init tabs for all actions
         $this->view->tabs = array(
             array(
-                'title' => pm_Locale::lmsg('blocked-domains'),
+                'title' => pm_Locale::lmsg('blocked-domains') . ($disabledDomainsCount ? " ($disabledDomainsCount)" : ''),
                 'action' => 'blocked'
             ),
             array(
-                'title' => pm_Locale::lmsg('blocked-mailboxes'),
+                'title' => pm_Locale::lmsg('blocked-mailboxes') . ($disabledMailboxesCount ? " ($disabledMailboxesCount)" : ''),
                 'action' => 'blocked_mailboxes'
             ),
             array(
@@ -64,6 +69,8 @@ class IndexController extends pm_Controller_Action
             $this->view->blockedDomains = array_filter($this->view->blockedDomains, function($i) {
                 return $i['domain'] != $_POST['unblock'];
             });
+
+            $this->_redirect('index/blocked');
         }
 
         $this->view->list = $this->getListDomains();
@@ -94,6 +101,8 @@ class IndexController extends pm_Controller_Action
                     }
                 );
             }
+
+            $this->_redirect('index/blocked_mailboxes');
         }
 
         $this->view->list = $this->getListMailboxes();

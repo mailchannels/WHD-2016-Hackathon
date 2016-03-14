@@ -1,0 +1,16 @@
+
+.custom-provider-header {
+    background-color: rgb(188, 19, 19);
+    margin-top: 10px;
+    border: 1px solid #570000;
+}
+.custom-provider-container {
+    padding: 8px 0px 8px 18px;
+    background-color: rgb(188, 19, 19);
+}
+.custom-provider-container p {
+    background-color: rgb(188, 19, 19);
+    color: white;
+    font-size: 15px;
+    margin: 0;
+}
