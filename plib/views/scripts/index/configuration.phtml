@@ -96,7 +96,9 @@ $entryPoint .= '?auth_token=' . $this->token;
 
             foreach ($this->actionConfig as $item) {
                 echo "<tr>";
-                echo sprintf("<td>%s</td><td>%s</td>", $item['event'], $item['action']);
+                echo sprintf("<td>%s</td><td>%s</td>",
+                             Modules_Harvard_ActionConfig::eventDescription($item['event']),
+                             Modules_Harvard_ActionConfig::actionDescription($item['action']));
                 echo "</tr>";
             }
             ?>

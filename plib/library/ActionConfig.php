@@ -62,6 +62,10 @@ class Modules_Harvard_ActionConfig implements IteratorAggregate {
             if (! (isset($item['event']) && isset($item['action']))) {
                 unset($config[$idx]);
             }
+            if (! (in_array($item['event'], array_keys(self::getAvailableEvents()))
+                    && in_array($item['action'], array_keys(self::getAvailableActions())))) {
+                unset($config[$idx]);
+            }
         }
         return $config;
     }
@@ -80,6 +84,14 @@ class Modules_Harvard_ActionConfig implements IteratorAggregate {
             'block_sender' => pm_Locale::lmsg('Block Sender'),
             'block_domain' => pm_Locale::lmsg('Block Domain')
         ];
+    }
+
+    public static function eventDescription($tag) {
+        return self::getAvailableEvents()[$tag];
+    }
+
+    public static function actionDescription($tag) {
+        return self::getAvailableActions()[$tag];
     }
 
     /**
