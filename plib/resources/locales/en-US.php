@@ -31,7 +31,6 @@ $messages = array(
     'title-remove-action' => 'Remove action',
     'message-suspendet-site' => 'Some mail accounts have been suspended due to abuse',
     'enable-mailbox-button' => 'Re-enable this mailbox',
-    'message-suspendet-site' => 'Some mailaccount has been suspended due to Spam violation',
     'no-domains-blocked' => 'No domains are currently being blocked',
     'no-mailboxes-blocked' => 'No mailboxes are currently being blocked',
 );
