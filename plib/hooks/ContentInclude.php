@@ -23,7 +23,7 @@ class Modules_Harvard_ContentInclude extends pm_Hook_ContentInclude
         ';
         $customersDomains = Modules_Harvard_Customer::affectedDomains();
         foreach((array)$customersDomains as $domain){
-            $script .= 'document.getElementById("active-list-item-d:' . $domain['id'] . '").getElementsByClassName("caption-main")[0].appendChild(panel);';
+            $script .= 'document.getElementById("active-list-item-d:' . $domain['id'] . '").getElementsByClassName("caption-main")[0].appendChild(panel.cloneNode(true));' . PHP_EOL;
         }
 
         return $script;
