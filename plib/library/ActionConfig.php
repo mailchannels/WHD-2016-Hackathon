@@ -53,6 +53,20 @@ class Modules_Harvard_ActionConfig implements IteratorAggregate
         self::setActionConfig($this->config);
     }
 
+    public function removeAction($event)
+    {
+        foreach ($this->config as $idx => $item)
+        {
+            if ($item['event'] == $event)
+            {
+                unset($this->config[$idx]);
+                break;
+            }
+        }
+
+        self::setActionConfig($this->config);
+    }
+
     /**
      * Retrieve the action configuration from key/val storage.
      *

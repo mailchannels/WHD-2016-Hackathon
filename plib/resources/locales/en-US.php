@@ -27,4 +27,5 @@ $messages = array(
     'select-action-block-domain' => 'Block mail service for the sender\'s domain',
     'select-action-block-sender' => 'Disable mailbox of the sender',
     'enable-domain-button' => 'Re-enable this domain',
+    'title-remove-action' => 'Remove action',
 );

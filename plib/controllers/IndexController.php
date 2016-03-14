@@ -97,7 +97,10 @@ class IndexController extends pm_Controller_Action
     {
         $config = new Modules_Harvard_ActionConfig;
 
-        if (isset($_POST['event']) && isset($_POST['action']))
+        if (isset($_POST['remove-event'])) {
+            $config->removeAction($_POST['remove-event']);
+        }
+        elseif (isset($_POST['event']) && isset($_POST['action']))
         {
             $config->addAction($_POST['event'], $_POST['action']);
         }
