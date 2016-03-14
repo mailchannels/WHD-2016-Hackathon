@@ -122,7 +122,7 @@ APICALL;
 
         $response = pm_ApiRpc::getService()->call($request);
 
-        $status = $response->mail->disable->result->status == "ok";
+        $status = $response->mail->{$action}->result->status == "ok";
 
         if ($status)
         {

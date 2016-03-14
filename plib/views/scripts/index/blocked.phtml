@@ -5,15 +5,24 @@
  * Date: 2016-03-13
  * Time: 4:12 PM
  */
-
+echo $this->partial('style.phtml');
 echo $this->renderTabs($this->tabs);
-
-foreach( Modules_Harvard_MailSettings::getDisabledDomains() as $blocked) {
-    $domain = $blocked['domain'];
-    $id = $blocked['id'];
-    echo "<a href='/smb/mail-settings/edit/id/$id/domainId/$id'>$domain</a> <br />";
-}
-
 ?>
+
+<form method="post">
+<table cellspacing="10px" style="border-collapse: false;">
+    <?php
+
+    foreach( $this->blockedDomains as $blocked) {
+        $domain = $blocked['domain'];
+        $id = $blocked['id'];
+        echo "<tr><td><a href='/smb/mail-settings/edit/id/$id/domainId/$id'>$domain</a> </td>";
+        echo "<td><button class='btn btn-default' type='submit' name='unblock' value='$domain'>{$this->lmsg('enable-domain-button')}</button>";
+    }
+
+    ?>
+
+</table>
+</form>
 
 

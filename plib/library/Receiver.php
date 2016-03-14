@@ -50,11 +50,17 @@ class Modules_Harvard_Receiver
 
                 $mailSettings = new Modules_Harvard_MailSettings;
 
-                // TODO: Check for relevant settings.
-                $mailSettings->disableMailDomain($domain);
-                //$mailSettings->disableMailUser($domain, $username);
+                switch($item['action']) {
+                    case "block-domain":
+                        $mailSettings->disableMailDomain($domain);
+                        break;
+                    case "block-sender":
+                        $mailSettings->disableMailUser($domain, $username);
+                        break;
+                    default:
+                        pm_Log::err("Harvard webhook Receiver: unknown action {$item['action']}");
 
-                return;
+                }
             }
         }
     }
