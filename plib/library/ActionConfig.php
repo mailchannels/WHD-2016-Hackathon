@@ -32,7 +32,7 @@ class Modules_Harvard_ActionConfig implements IteratorAggregate {
     /**
      * Retrieve the action configuration from key/val storage
      */
-    public static function getActionConfig()
+    private static function getActionConfig()
     {
         $json = pm_Settings::get(actionConfig);
 
@@ -48,7 +48,7 @@ class Modules_Harvard_ActionConfig implements IteratorAggregate {
     /**
      * Store the action configuration to the key/val storage
      */
-    public static function setActionConfig($config)
+    private static function setActionConfig($config)
     {
         pm_Log::debug(sprintf("setActionConfig -> %s", print_r($config, true)));
         pm_Settings::set(actionConfig, json_encode(self::cleanConfig($config)));
@@ -64,6 +64,22 @@ class Modules_Harvard_ActionConfig implements IteratorAggregate {
             }
         }
         return $config;
+    }
+
+    public static function getAvailableEvents() {
+        return [
+            'tag_is_spamming' => pm_Locale::lmsg('Sending Spam'),
+            'tag_bad_recipients' => pm_Locale::lmsg('Sending to invalid recipients'),
+            'tag_bounce_rate' => pm_Locale::lmsg('High bounce rate'),
+            'tag_phishing' => pm_Locale::lmsg('Sending Phish')
+        ];
+    }
+
+    public static function getAvailableActions() {
+        return [
+            'block_sender' => pm_Locale::lmsg('Block Sender'),
+            'block_domain' => pm_Locale::lmsg('Block Domain')
+        ];
     }
 
     /**
