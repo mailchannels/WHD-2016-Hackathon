@@ -64,8 +64,6 @@ class IndexController extends pm_Controller_Action
             $this->view->blockedDomains = array_filter($this->view->blockedDomains, function($i) {
                 return $i['domain'] != $_POST['unblock'];
             });
-
-            pm_View_Status::addInfo("The domain '$domain' has been re-enabled", false); // TODO: localize
         }
     }
 
