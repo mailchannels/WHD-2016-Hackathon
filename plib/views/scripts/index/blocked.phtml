@@ -13,11 +13,18 @@ echo $this->renderTabs($this->tabs);
 <table cellspacing="10px" style="border-collapse: false;">
     <?php
 
-    foreach( $this->blockedDomains as $blocked) {
-        $domain = $blocked['domain'];
-        $id = $blocked['id'];
-        echo "<tr><td><a href='/smb/mail-settings/edit/id/$id/domainId/$id'>$domain</a> </td>";
-        echo "<td><button class='btn btn-default' type='submit' name='unblock' value='$domain'>{$this->lmsg('enable-domain-button')}</button>";
+    if( empty($this->blockedDomains) ) {
+        echo "<tr><td>No domains are currently being blocked</td></tr>";
+    }
+    else {
+        foreach ($this->blockedDomains as $blocked) {
+            $domain = $blocked['domain'];
+            $id = $blocked['id'];
+            $reason = $blocked['reason'];
+            echo "<tr><td><a href='/smb/mail-settings/edit/id/$id/domainId/$id'>$domain</a></td>";
+            echo "<td>$reason</td>";
+            echo "<td><button class='btn btn-default' type='submit' name='unblock' value='$domain'>{$this->lmsg('enable-domain-button')}</button>";
+        }
     }
 
     ?>
