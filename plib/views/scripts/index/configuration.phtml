@@ -19,8 +19,10 @@ $entryPoint .= '?auth_token=' . $this->token;
 <!-- Latest compiled and minified CSS -->
 <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">-->
 <style>
-    .form-inline label {
+    .form-inline label,
+    .form-label {
         display: inline-block;
+        font-size: .8em;
     }
     .btn {
         border-radius: 3px;
@@ -50,47 +52,59 @@ $entryPoint .= '?auth_token=' . $this->token;
     }
 
 </style>
-<h3>API Settings</h3>
+<h3><?php echo $this->lmsg('settings-api') ?></h3>
 <section>
     <form method="post" action="<?php echo $this->url(array('controller' => 'index', 'action' => 'genkey')); ?>">
-        <small><?php echo $this->lmsg('api-key') ?></small>
-        <h4><?php echo $this->token; ?>
-        <button type="submit" class="btn btn-xs"><?php echo $this->lmsg('Generate New API Key') ?></button></h4>
+        <span class="form-label"><?php echo $this->lmsg('api-key') ?></span>
+        <p>
+            <?php echo $this->token; ?>
+            <button type="submit" class="btn"><?php echo $this->lmsg('generate-api-key') ?></button>
+        </p>
     </form>
 
-        <small><?php echo $this->lmsg('Webhook Endpoint') ?></small>
-        <h4><?php echo $entryPoint; ?></h4>
+    <span class="form-label"><?php echo $this->lmsg('webhook-endpoint') ?></span>
+    <p><?php echo $entryPoint; ?></p>
 </section>
 
-<h3><?php echo $this->lmsg('add-action') ?></h3>
+<h3><?php echo $this->lmsg('event-actions') ?></h3>
 <section>
     <form class="form-inline" action="<?php echo $this->url(array('controller' => 'index', 'action' => 'addAction')); ?>" method="post">
         <table>
-            <thead>
+            <tbody>
             <tr>
                 <td>
-                    <select name="event">
-                        <option value="*"><?php echo $this->lmsg('All Events') ?></option>
+                    <label for="select-event">
+                        <?php echo $this->lmsg('select-event') ?>
+                    </label>
+                    <br/>
+                    <select name="event" id="select-event">
+                        <option value="*"><?php echo $this->lmsg('select-event-all') ?></option>
                         <?php
-                        foreach ($this->availableEvents as $tag => $description) {
+                        foreach ($this->availableEvents as $tag) {
+                            $description = $this->lmsg('select-event-' . $tag);
                             echo "<option value='$tag'>$description</option>";
                         }
                         ?>
                     </select>
                 </td>
                 <td>
-                    <select name="action">
+                    <label for="select-action">
+                         <?php echo $this->lmsg('select-action') ?>
+                    </label>
+                    <br/>
+                    <select name="action" id="select-action">
                         <?php
-                        foreach ($this->availableActions as $tag => $description) {
+                        foreach ($this->availableActions as $tag) {
+                            $description = $this->lmsg('select-action-' . $tag);
                             echo "<option value='$tag'>$description</option>";
                         }
                         ?>
                     </select>
                 </td>
                 <td>
-                    <button class="btn btn-default btn-xs"><?php echo $this->lmsg('Add Action') ?></button>
+                    <button class="btn btn-default" type="submit"><?php echo $this->lmsg('add-action') ?></button>
                 </td>
-            </thead>
+            </tr>
 
             <?php
 
@@ -102,6 +116,7 @@ $entryPoint .= '?auth_token=' . $this->token;
                 echo "</tr>";
             }
             ?>
+            </tbody>
         </table>
     </form>
 </section>
