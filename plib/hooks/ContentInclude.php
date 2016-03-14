@@ -17,7 +17,7 @@ class Modules_Harvard_ContentInclude extends pm_Hook_ContentInclude
 
                         panel.update(
                             \'<div class="custom-provider-container">\' +
-                            \'<p>' . pm_Locale::lmsg("message-suspendet-site") . '</p>\' +
+                            \'<p>' . pm_Locale::lmsg("message-suspended-site") . '</p>\' +
                             \'</div>\'
                         );
         ';
