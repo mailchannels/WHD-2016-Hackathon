@@ -19,8 +19,10 @@ $entryPoint .= '?auth_token=' . $this->token;
 <!-- Latest compiled and minified CSS -->
 <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">-->
 <style>
-    .form-inline label {
+    .form-inline label,
+    .form-label {
         display: inline-block;
+        font-size: .8em;
     }
     .btn {
         border-radius: 3px;
@@ -47,50 +49,56 @@ $entryPoint .= '?auth_token=' . $this->token;
     }
 
 </style>
-<h3>API Settings</h3>
+<h3><?php echo $this->lmsg('settings-api') ?></h3>
 <section>
     <form method="post" action="<?php echo $this->url(array('controller' => 'index', 'action' => 'genkey')); ?>">
-        <small><?php echo $this->lmsg('api-key') ?></small>
-        <h4><?php echo $this->token; ?>
-        <button type="submit" class="btn btn-xs">Generate New API Key</button></h4>
+        <span class="form-label"><?php echo $this->lmsg('api-key') ?></span>
+        <p>
+            <?php echo $this->token; ?>
+            <button type="submit" class="btn"><?php echo $this->lmsg('generate-api-key') ?></button>
+        </p>
     </form>
 
-        <small>Webhook Endpoint</small>
-        <h4><?php echo $entryPoint; ?></h4>
+    <span class="form-label"><?php echo $this->lmsg('webhook-endpoint') ?></span>
+    <p><?php echo $entryPoint; ?></p>
 </section>
 
-<h3><?php echo $this->lmsg('add-action') ?></h3>
+<h3><?php echo $this->lmsg('event-actions') ?></h3>
 <section>
     <form class="form-inline" action="<?php echo $this->url(array('controller' => 'index', 'action' => 'addAction')); ?>" method="post">
         <table>
-            <thead>
+            <tbody>
             <tr>
                 <td>
-                    <small>Event</small>
+                    <label for="select-event">
+                        <?php echo $this->lmsg('select-event') ?>
+                    </label>
                     <br/>
-                    <select name="event">
-                        <option value="*">All Events</option>
-                        <option value="tag_test">User is sending Spam</option>
-                        <option>User is sending to invalid recipients</option>
-                        <option>User is generating complaints from receivers</option>
+                    <select name="event" id="select-event">
+                        <option value="*"><?php echo $this->lmsg('select-event-all') ?></option>
+                        <option value="tag_test"><?php echo $this->lmsg('select-event-spam') ?></option>
+                        <option><?php echo $this->lmsg('select-event-invalid-recipients') ?></option>
+                        <option><?php echo $this->lmsg('select-event-complaints') ?></option>
                     </select>
                 </td>
                 <td>
-                    <small>Action</small>
+                    <label for="select-action">
+                         <?php echo $this->lmsg('select-action') ?>
+                    </label>
                     <br/>
-                    <select name="action">
+                    <select name="action" id="select-action">
                         <!--
                                     <option>Throttle Sender</option>
                                     <option>Throttle Domain</option>
-                                    <option>Block Sender</option>
+                                    <option><?php echo $this->lmsg('select-action-block-sender') ?></option>
                         -->
-                        <option>Block Domain</option>
+                        <option><?php echo $this->lmsg('select-action-block-domain') ?></option>
                     </select>
                 </td>
                 <td>
-                    <button class="btn btn-default btn-xs">Add Action</button>
+                    <button class="btn btn-default" type="submit"><?php echo $this->lmsg('add-action') ?></button>
                 </td>
-            </thead>
+            </tr>
 
             <?php
 
@@ -100,6 +108,7 @@ $entryPoint .= '?auth_token=' . $this->token;
                 echo "</tr>";
             }
             ?>
+            </tbody>
         </table>
     </form>
 </section>
