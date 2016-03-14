@@ -14,7 +14,6 @@ class IndexController extends pm_Controller_Action
      */
     public function init()
     {
-        pm_Settings::set('disabled_mail_boxes', '{}');
         parent::init();
 
         // Init title for all actions
