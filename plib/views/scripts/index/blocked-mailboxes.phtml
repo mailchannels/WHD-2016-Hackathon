@@ -14,14 +14,18 @@ echo $this->renderTabs($this->tabs);
     <tbody>
     <?php
 
-    foreach ($this->blockedMailboxes as $blocked)
-    {
-        $domain = $blocked['domain_name'];
-        $user = $blocked['user'];
+    if( empty($this->blockedMailboxes) ) {
+        echo "<tr><td>{$this->lmsg('no-mailboxes-blocked')}</td></tr>";
+    }
+    else {
+        foreach ($this->blockedMailboxes as $blocked) {
+            $domain = $blocked['domain_name'];
+            $user = $blocked['user'];
 
-        $url = '/smb/email-address/edit/id/' . $blocked['user_id'] . '/domainId/' . $blocked['domain_id'];
-        echo "<tr><td><a href='$url'>$user@$domain</a> </td>";
-        echo "<td><button class='btn btn-default' type='submit' name='unblock' value='$user@$domain'>{$this->lmsg('enable-mailbox-button')}</button>";
+            $url = '/smb/email-address/edit/id/' . $blocked['user_id'] . '/domainId/' . $blocked['domain_id'];
+            echo "<tr><td><a href='$url'>$user@$domain</a> </td>";
+            echo "<td><button class='btn btn-default' type='submit' name='unblock' value='$user@$domain'>{$this->lmsg('enable-mailbox-button')}</button>";
+        }
     }
 
     ?>
