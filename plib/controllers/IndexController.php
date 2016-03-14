@@ -103,7 +103,7 @@ class IndexController extends pm_Controller_Action
                 );
             }
 
-            $this->_redirect('index/blockedmailboxes');
+            $this->_redirect('index/blocked_mailboxes');
         }
     }
 
