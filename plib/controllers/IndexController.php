@@ -14,7 +14,7 @@ class IndexController extends pm_Controller_Action
      */
     public function init()
     {
-        pm_Settings::set('disabled_mail_boxes', '{}');
+       // pm_Settings::set('disabled_mail_boxes', '{}');
         parent::init();
 
         // Init title for all actions
@@ -23,13 +23,17 @@ class IndexController extends pm_Controller_Action
         // Init tabs for all actions
         $this->view->tabs = array(
             array(
-                'title' => pm_Locale::lmsg('blocked'),
+                'title' => pm_Locale::lmsg('blocked-domains'),
                 'action' => 'blocked'
+            ),
+            array(
+                'title' => pm_Locale::lmsg('blocked-mailboxes'),
+                'action' => 'blocked_mailboxes'
             ),
             array(
                 'title' => pm_Locale::lmsg('configuration'),
                 'action' => 'configuration',
-            )
+            ),
         );
     }
 
@@ -62,6 +66,37 @@ class IndexController extends pm_Controller_Action
             });
 
             pm_View_Status::addInfo("The domain '$domain' has been re-enabled", false); // TODO: localize
+        }
+    }
+
+    /**
+     * List of blocked mailboxes.
+     *
+     * @return void
+     */
+    public function blockedmailboxesAction()
+    {
+        $mailSettings = new Modules_Harvard_MailSettings;
+        $this->view->blockedMailboxes = $mailSettings->getDisabledMailboxes();
+
+        if (isset($_POST['unblock']))
+        {
+            $split = explode('@', $_POST['unblock'], 2);
+
+            if (count($split) === 2)
+            {
+                $user = $split[0];
+                $domain = $split[1];
+
+                $mailSettings->enableMailUser($domain, $user);
+
+                $this->view->blockedMailboxes = array_filter(
+                    $this->view->blockedMailboxes,
+                    function($i) use($user, $domain) {
+                        return $i['domain_name'] !== $domain && $i['user'] !== $user;
+                    }
+                );
+            }
         }
     }
 
