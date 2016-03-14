@@ -8,10 +8,10 @@
 
 echo $this->renderTabs($this->tabs);
 
-$mailSettings = new Modules_Harvard_MailSettings;
-
-foreach( $mailSettings->getDisabledDomains() as $domain ) {
-    echo "$domain <br />"; // TODO: link to domain's mail settings page?
+foreach( Modules_Harvard_MailSettings::getDisabledDomains() as $blocked) {
+    $domain = $blocked['domain'];
+    $id = $blocked['id'];
+    echo "<a href='/smb/mail-settings/edit/id/$id/domainId/$id'>$domain</a> <br />";
 }
 
 ?>

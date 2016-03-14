@@ -112,7 +112,7 @@ APICALL;
         if( $status ) {
             pm_Log::debug("$domain status was set to $action");
             if( $action == disable ) {
-                $this->recordDisabledDomain($domain);
+                $this->recordDisabledDomain("$site_id", $domain);
             }
         }
         else {
@@ -120,55 +120,73 @@ APICALL;
         }
     }
 
-    public function getMailDomainStatus($domain) {
-        $site_id = $this->getIdFromDomain($domain);
+    function getMailDomainStatus($domains) {
+        if( is_null($domains) ) {
+            return NULL;
+        }
 
-        $request = <<<APICALL
-            <mail>
-                <get_prefs>
-                    <filter>
-                        <site-id>$site_id</site-id>
-                    </filter>
-                </get_prefs>
-            </mail>
-APICALL;
+        if( empty($domains) ) {
+            return array();
+        }
+
+        $request = "<mail> <get_prefs> <filter>";
+
+        foreach($domains as $id => $domain) {
+            $request .= "<site-id>$id</site-id>";
+        }
+
+        $request .= " </filter> </get_prefs> </mail>";
 
         $response = pm_ApiRpc::getService()->call($request);
 
-        $status = $response->mail->get_prefs->result->prefs->mailservice == "true";
+        $results = $response->mail->get_prefs->result;
 
-        pm_Log::err("status of $domain is $status");
-        return $status;
+        $domain_results = array();
+
+        foreach($results as $result) {
+            $site_id = $result->{'site-id'};
+            $enabled = $result->prefs->mailservice == "true";
+            if( ! $enabled ) {
+                array_push($domain_results, array('id' => "$site_id", 'domain' => $domains["$site_id"]));
+            }
+        }
+
+        return $domain_results;
     }
 
-    private function recordDisabledDomain($domain) {
+    function recordDisabledDomain($domain_id, $domain_name) {
         $domains = $this->getDisabledDomains();
-        if( !in_array($domain, $domains) ) {
-            array_push($domains, $domain);
+
+        if( is_null($domains) ) {
+            pm_Log::err("Error recording domain $domain_id");
+            return;
         }
-        pm_Settings::set(disabled_mail_domains, json_encode($domains));
+
+        $result = array();
+        foreach($domains as $domain) {
+            $result[$domain['id']] = $domain['domain'];
+        }
+        $result[(integer)$domain_id] = $domain_name;
+
+        pm_Log::err("Setting domains: " . implode($result));
+        pm_Settings::set(disabled_mail_domains, json_encode($result));
     }
 
     public function getDisabledDomains() {
+        //pm_Settings::clean();
         $domains_json = pm_Settings::get(disabled_mail_domains);
-        if( $domains_json == null ) {
-            $domains = array();
+        if( is_null($domains_json) ) {
+            return array();
         }
         else {
-            $domains = json_decode($domains_json);
-        }
-        if( $domains == null ) {
-            pm_Log::err("Could not decode list of blocked domains($domains_json)");
-            return null;
+            $domains = json_decode($domains_json, true);
+            if( is_null($domains) ) {
+                pm_Log::err("Could not decode list of blocked domains ($domains_json)");
+                return NULL;
+            }
         }
 
-        function status($domain) {
-            return !$this->getMailDomainStatus($domain);
-        }
-        // check to make sure they're still disabled:
-        $domains = array_filter($domains, "status");
-
-        return $domains;
+        return Modules_Harvard_MailSettings::getMailDomainStatus( $domains);
     }
 
     private function getIdFromDomain($domain) {
