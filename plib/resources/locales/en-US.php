@@ -8,7 +8,8 @@
 
 $messages = array(
     'harvard' => 'Harvard',
-    'blocked' => 'Blocked Domains',
+    'blocked-domains' => 'Blocked Domains',
+    'blocked-mailboxes' => 'Blocked Mailboxes',
     'configuration' => 'Configuration',
     'settings-api' => 'API Settings',
     'api-key' => 'API Key',
@@ -29,4 +30,5 @@ $messages = array(
     'enable-domain-button' => 'Re-enable this domain',
     'title-remove-action' => 'Remove action',
     'message-suspendet-site' => 'Some mail accounts have been suspended due to abuse',
+    'enable-mailbox-button' => 'Re-enable this mailbox',
 );

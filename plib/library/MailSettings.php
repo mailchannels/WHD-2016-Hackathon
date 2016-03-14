@@ -80,7 +80,7 @@ APICALL;
 
             if (!$enabled)
             {
-                $this->recordDisabledMailbox($site_id, $user);
+                $this->recordDisabledMailbox($site_id, $domain, $user);
             }
 
             return true;
@@ -215,7 +215,7 @@ APICALL;
             $name = $box['user'];
 
             // Remember the site ID, because it won't appear in the XML answer.
-            $tmp[$name] = $id;
+            $tmp[$name] = array($id, $box['domain_name']);
 
             $request .= "<site-id>$id</site-id>";
             $request .= "<name>$name</name>";
@@ -230,15 +230,19 @@ APICALL;
         foreach ($results as $result)
         {
             $user = (string) $result->mailname->name;
+            $userId = (int) $result->mailname->id;
             $enabled = (string) $result->mailname->mailbox->enabled;
 
-            $domain_id = $tmp[$user];
+            $domain_id = $tmp[$user][0];
+            $domain_name = $tmp[$user][1];
 
             if ($enabled === 'false')
             {
                 $box = array(
                     'domain_id' => $domain_id,
+                    'domain_name' => $domain_name,
                     'user' => $user,
+                    'user_id' => $userId,
                 );
                 array_push($boxesNew, $box);
             }
@@ -276,12 +280,13 @@ APICALL;
     /**
      * Adds a mailbox to the stored list of disabled mailboxes.
      *
-     * @param   int     $domain_id  ID of the site the mailbox belongs to.
-     * @param   string  $user       Blocked user.
+     * @param   int     $domain_id    ID of the site the mailbox belongs to.
+     * @param   string  $domain_name  Name of the site the mailbox belongs to.
+     * @param   string  $user         Blocked user.
      *
      * @return void
      */
-    private function recordDisabledMailbox($domain_id, $user)
+    private function recordDisabledMailbox($domain_id, $domain_name, $user)
     {
         $accounts = $this->getDisabledMailboxes();
 
@@ -294,6 +299,7 @@ APICALL;
 
         $box = array(
             'domain_id' => $domain_id,
+            'domain_name' => $domain_name,
             'user' => $user,
         );
 
