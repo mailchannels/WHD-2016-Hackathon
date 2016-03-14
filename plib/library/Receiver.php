@@ -40,9 +40,10 @@ class Modules_Harvard_Receiver
         $mailSettings = new Modules_Harvard_MailSettings();
 
         foreach ($actionConfig as $item) {
-            if ($item->event == $event || $item->event == '*') {
 
-                pm_Log::debug("condition: $item->condition_name, domain: $domain");
+            pm_Log::debug("event: {$item['event']}, domain: $domain, action: {$item['action']}");
+
+            if ($item['event'] == $event || $item['event'] == 'all') {
 
                 $mailSettings = new Modules_Harvard_MailSettings;
 
