@@ -123,11 +123,11 @@ class Modules_Harvard_ActionConfig implements IteratorAggregate
     {
         return [
             'all',
-            'spamming',
-            'bad-recipients',
-            'bounce-rate',
-            'phishing',
-            'complaints',
+            'tag_spamming',
+            'tag_bad-recipients',
+            'tag_bounce-rate',
+            'tag_phishing',
+            'tag_complaints',
         ];
     }
 
