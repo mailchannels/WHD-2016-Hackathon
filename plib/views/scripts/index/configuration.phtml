@@ -6,6 +6,7 @@
  * Time: 4:00 PM
  */
 
+echo $this->partial('style.phtml');
 echo $this->renderTabs($this->tabs);
 
 // TODO: Can we use the URL helper?
@@ -16,42 +17,6 @@ $entryPoint .= '?auth_token=' . $this->token;
 
 ?>
 
-<!-- Latest compiled and minified CSS -->
-<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">-->
-<style>
-    .form-inline label,
-    .form-label {
-        display: inline-block;
-        font-size: .8em;
-    }
-    .btn {
-        border-radius: 3px;
-        background-color: white;
-        border-color: lightgray;
-    }
-    h4 .btn {
-        vertical-align: inherit;
-    }
-    thead td {
-        padding-right: 8px;
-        padding-bottom: 8px;
-    }
-    thead tr {
-        vertical-align: bottom;
-    }
-    tbody td {
-        padding: 5px 0px;
-        padding-left: 9px;
-    }
-    section {
-        background-color: #f8f8f8;
-        padding: 10px 20px;
-        margin-bottom: 20px;
-        border: solid 1px #e8e8e8;
-        border-radius: 3px;
-    }
-
-</style>
 <h3><?php echo $this->lmsg('settings-api') ?></h3>
 <section>
     <form method="post" action="<?php echo $this->url(array('controller' => 'index', 'action' => 'genkey')); ?>">
