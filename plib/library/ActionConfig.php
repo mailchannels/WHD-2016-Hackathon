@@ -6,23 +6,47 @@
  * Time: 9:10 PM
  */
 
-class Modules_Harvard_ActionConfig implements IteratorAggregate {
+/**
+ * Class for the configuration page.
+ *
+ * @since  1.0
+ */
+class Modules_Harvard_ActionConfig implements IteratorAggregate
+{
 
     private $config = [];
 
-    function Modules_Harvard_ActionConfig() {
+    /**
+     * Modules_Harvard_ActionConfig constructor.
+     */
+    public function __construct()
+    {
         $this->config = self::getActionConfig();
     }
 
-    public function addAction($event, $action) {
+    /**
+     * Adds a new event/action pair to the configuration.
+     *
+     * @param   string  $event   Key of the event to react to.
+     * @param   string  $action  Key of the action to take in case of the specified event.
+     *
+     * @return void
+     */
+    public function addAction($event, $action)
+    {
         $found = false;
-        foreach($this->config as $idx => $item) {
-            if ($item['event'] == $event) {
+
+        foreach ($this->config as $idx => $item)
+        {
+            if ($item['event'] == $event)
+            {
                 $found = true;
                 $this->config[$idx] = ['event' => $event, 'action' => $action];
             }
         }
-        if (!$found) {
+
+        if (!$found)
+        {
             array_push($this->config, ['event' => $event, 'action' => $action]);
         }
 
@@ -30,7 +54,9 @@ class Modules_Harvard_ActionConfig implements IteratorAggregate {
     }
 
     /**
-     * Retrieve the action configuration from key/val storage
+     * Retrieve the action configuration from key/val storage.
+     *
+     * @return  array  Configuration array.
      */
     private static function getActionConfig()
     {
@@ -38,7 +64,8 @@ class Modules_Harvard_ActionConfig implements IteratorAggregate {
 
         pm_Log::debug("getActionConfig -> $json");
 
-        if (!isset($json)) {
+        if (!isset($json))
+        {
             $json = '[{"condition_name":"*"}]'; // TBD: Empty list once everything is working
         }
 
@@ -47,6 +74,10 @@ class Modules_Harvard_ActionConfig implements IteratorAggregate {
 
     /**
      * Store the action configuration to the key/val storage
+     *
+     * @param   array  $config  Array containing the new configuration.
+     *
+     * @return  array  The new configuration.
      */
     private static function setActionConfig($config)
     {
@@ -54,12 +85,24 @@ class Modules_Harvard_ActionConfig implements IteratorAggregate {
         pm_Settings::set(actionConfig, json_encode(self::cleanConfig($config)));
     }
 
-    private static function cleanConfig($config) {
-        if (empty($config)) {
+    /**
+     * Clean up a configuration array.
+     *
+     * @param   array  $config  The configuration to clean up.
+     *
+     * @return  array  Cleaned configuration.
+     */
+    private static function cleanConfig($config)
+    {
+        if (empty($config))
+        {
             $config = [];
         }
-        foreach ($config as $idx => $item) {
-            if (! (isset($item['event']) && isset($item['action']))) {
+
+        foreach ($config as $idx => $item)
+        {
+            if (!(isset($item['event']) && isset($item['action'])))
+            {
                 unset($config[$idx]);
             }
             if (! (in_array($item['event'], self::getAvailableEvents())
@@ -67,10 +110,17 @@ class Modules_Harvard_ActionConfig implements IteratorAggregate {
                 unset($config[$idx]);
             }
         }
+
         return $config;
     }
 
-    public static function getAvailableEvents() {
+    /**
+     * Returns all available events.
+     *
+     * @return  array  Available events.
+     */
+    public static function getAvailableEvents()
+    {
         return [
             'all',
             'spamming',
@@ -81,7 +131,13 @@ class Modules_Harvard_ActionConfig implements IteratorAggregate {
         ];
     }
 
-    public static function getAvailableActions() {
+    /**
+     * Returns all available actions.
+     *
+     * @return  array  Available actions.
+     */
+    public static function getAvailableActions()
+    {
         return [
             'block-sender',
             'block-domain',

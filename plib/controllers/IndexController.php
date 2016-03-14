@@ -1,11 +1,24 @@
 <?php
 
+/**
+ * Main controller class for routing URLs.
+ *
+ * @since  1.0
+ */
 class IndexController extends pm_Controller_Action
 {
-    public function init() {
+    /**
+     * Initialization common for all views.
+     *
+     * @return void
+     */
+    public function init()
+    {
         parent::init();
+
         // Init title for all actions
         $this->view->pageTitle = "Project Harvard";
+
         // Init tabs for all actions
         $this->view->tabs = array(
             array(
@@ -19,31 +32,62 @@ class IndexController extends pm_Controller_Action
         );
     }
 
+    /**
+     * Index URL, redirects to list of blocked sites.
+     *
+     * @return void
+     */
     public function indexAction()
     {
         $this->_forward('blocked');
     }
 
-    public function blockedAction() {
+    /**
+     * List of blocked sites.
+     *
+     * @return void
+     */
+    public function blockedAction()
+    {
     }
 
-    public function configurationAction() {
+    /**
+     * Configuration page.
+     *
+     * @return void
+     */
+    public function configurationAction()
+    {
         $this->view->token = pm_Settings::get('authToken');
-        $this->view->actionConfig = new Modules_Harvard_ActionConfig();
-        $this->view->availableEvents = Modules_Harvard_ActionConfig::getAvailableEvents();
-        $this->view->availableActions = Modules_Harvard_ActionConfig::getAvailableActions();
+        $actionConfig = new Modules_Harvard_ActionConfig;
+        $this->view->actionConfig = $actionConfig;
+        $this->view->availableEvents = $actionConfig->getAvailableEvents();
+        $this->view->availableActions = $actionConfig->getAvailableActions();
     }
 
-    public function genkeyAction() {
+    /**
+     * Generates a new API key.
+     *
+     * @return void
+     */
+    public function genkeyAction()
+    {
         $key = Modules_Harvard_Helper::genRandHash();
         pm_Settings::set('authToken', $key);
         $this->_redirect('index/configuration');
     }
 
-    public function addactionAction() {
-
+    /**
+     * Adds a new event/action pair to the configuration.
+     *
+     * @return void
+     */
+    public function addactionAction()
+    {
         $config = new Modules_Harvard_ActionConfig;
-        if (isset($_POST['event']) && isset($_POST['action'])) {
+
+        if (isset($_POST['event']) && isset($_POST['action']))
+        {
             $config->addAction($_POST['event'], $_POST['action']);
         }
 

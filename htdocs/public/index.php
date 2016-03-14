@@ -1,5 +1,4 @@
 <?php
-
 require_once('pm/Loader.php');
 pm_Loader::registerAutoload();
 pm_Bootstrap::init();
@@ -24,5 +23,5 @@ if ($_SERVER['CONTENT_TYPE'] !== 'application/json')
 // Decode the posted JSON file.
 $jsonData = json_decode(file_get_contents('php://input'), true);
 
-$receiver = new Modules_Harvard_Receiver();
+$receiver = new Modules_Harvard_Receiver;
 $receiver->processJson($jsonData);

@@ -19,8 +19,11 @@ class Modules_Harvard_MailSettings
      *
      * @param   string  $domain  The domain name the mail account belongs to.
      * @param   string  $user    The user name to block.
+     *
+     * @return void
      */
-    public function disableMailUser($domain, $user) {
+    public function disableMailUser($domain, $user)
+    {
         $this->setMailUserStatus($domain, $user, false);
     }
 
@@ -29,8 +32,11 @@ class Modules_Harvard_MailSettings
      *
      * @param   string  $domain  The domain name the mail account belongs to.
      * @param   string  $user    The user name to unblock.
+     *
+     * @return void
      */
-    public function enableMailUser($domain, $user) {
+    public function enableMailUser($domain, $user)
+    {
         $this->setMailUserStatus($domain, $user, true);
     }
 
@@ -40,8 +46,11 @@ class Modules_Harvard_MailSettings
      * @param   string  $domain   The domain name the mail account belongs to.
      * @param   string  $user     The user name.
      * @param   bool    $enabled  Whether the mailbox should be enabled or disabled.
+     *
+     * @return  bool  True on success, false on failure.
      */
-    private function setMailUserStatus($domain, $user, $enabled = false) {
+    private function setMailUserStatus($domain, $user, $enabled = false)
+    {
         $site_id = $this->getIdFromDomain($domain);
 
         $setEnabled = $enabled ? 'true' : 'false';
@@ -66,23 +75,30 @@ APICALL;
         $response = pm_ApiRpc::getService()->call($request);
         $status = $response->mail->update->set->result->status == "ok";
 
-        if( $status ) {
+        if ($status)
+        {
             pm_Log::debug("$user@$domain's mailbox status was set to $setEnabled");
 
-            if( !$enabled ) {
+            if (!$enabled)
+            {
                 // TODO: $this->recordDisabledMailbox($domain, $user);
             }
+
+            return true;
         }
-        else {
+        else
+        {
             $trueName = $this->getMailFromAlias($site_id, $user);
 
-            if ($trueName !== false) {
-                $this->setMailUserStatus($domain, $trueName, $enabled);
+            if ($trueName !== false)
+            {
+                return $this->setMailUserStatus($domain, $trueName, $enabled);
             }
 
             pm_Log::err("$user@$domain's mailbox status could not be set");
         }
 
+        return false;
     }
 
     public function enableMailDomain($domain) {
@@ -106,32 +122,38 @@ APICALL;
 
         $response = pm_ApiRpc::getService()->call($request);
 
-
         $status = $response->mail->disable->result->status == "ok";
 
-        if( $status ) {
+        if ($status)
+        {
             pm_Log::debug("$domain status was set to $action");
-            if( $action == disable ) {
+
+            if ($action == disable)
+            {
                 $this->recordDisabledDomain("$site_id", $domain);
             }
         }
-        else {
+        else
+        {
             pm_Log::err("$domain status could not be set");
         }
     }
 
     function getMailDomainStatus($domains) {
-        if( is_null($domains) ) {
-            return NULL;
+        if (is_null($domains))
+        {
+            return null;
         }
 
-        if( empty($domains) ) {
+        if (empty($domains))
+        {
             return array();
         }
 
         $request = "<mail> <get_prefs> <filter>";
 
-        foreach($domains as $id => $domain) {
+        foreach ($domains as $id => $domain)
+        {
             $request .= "<site-id>$id</site-id>";
         }
 
@@ -143,10 +165,13 @@ APICALL;
 
         $domain_results = array();
 
-        foreach($results as $result) {
+        foreach ($results as $result)
+        {
             $site_id = $result->{'site-id'};
             $enabled = $result->prefs->mailservice == "true";
-            if( ! $enabled ) {
+
+            if (!$enabled)
+            {
                 array_push($domain_results, array('id' => "$site_id", 'domain' => $domains["$site_id"]));
             }
         }
@@ -157,39 +182,64 @@ APICALL;
     function recordDisabledDomain($domain_id, $domain_name) {
         $domains = $this->getDisabledDomains();
 
-        if( is_null($domains) ) {
+        if (is_null($domains))
+        {
             pm_Log::err("Error recording domain $domain_id");
-            return;
+
+            return null;
         }
 
         $result = array();
-        foreach($domains as $domain) {
+
+        foreach ($domains as $domain)
+        {
             $result[$domain['id']] = $domain['domain'];
         }
-        $result[(integer)$domain_id] = $domain_name;
+
+        $result[(integer) $domain_id] = $domain_name;
 
         pm_Log::err("Setting domains: " . implode($result));
         pm_Settings::set(disabled_mail_domains, json_encode($result));
     }
 
-    public function getDisabledDomains() {
+    /**
+     * Retrieves a list of all domains with disabled mail service.
+     *
+     * @return  array|null  Array containing the disabled domains on success, null on failure.
+     */
+    public function getDisabledDomains()
+    {
         //pm_Settings::clean();
         $domains_json = pm_Settings::get(disabled_mail_domains);
-        if( is_null($domains_json) ) {
+
+        if (is_null($domains_json))
+        {
             return array();
         }
-        else {
+        else
+        {
             $domains = json_decode($domains_json, true);
-            if( is_null($domains) ) {
+
+            if (is_null($domains))
+            {
                 pm_Log::err("Could not decode list of blocked domains ($domains_json)");
-                return NULL;
+
+                return null;
             }
         }
 
-        return Modules_Harvard_MailSettings::getMailDomainStatus( $domains);
+        return self::getMailDomainStatus($domains);
     }
 
-    private function getIdFromDomain($domain) {
+    /**
+     * Retrieves the site ID for a given domain name.
+     *
+     * @param   string  $domain  Domain name to search for.
+     *
+     * @return  int  The site ID on success.
+     */
+    private function getIdFromDomain($domain)
+    {
         $request = <<<APICALL
             <site>
               <get>
@@ -204,10 +254,18 @@ APICALL;
 APICALL;
 
         $response = pm_ApiRpc::getService()->call($request);
-        return $response->site->get->result->id;
 
+        return $response->site->get->result->id;
     }
 
+    /**
+     * Retrieves the main mail account name for a given alias.
+     *
+     * @param   int     $siteId  ID of the site the mail account belongs to.
+     * @param   string  $alias   Mail alias.
+     *
+     * @return  bool|string  The main account name on success, false on failure.
+     */
     public function getMailFromAlias($siteId, $alias)
     {
         $request = <<<APICALL
@@ -224,11 +282,14 @@ APICALL;
 
         $mailBoxes = $response->xpath('mail/get_info/result');
 
-        foreach ($mailBoxes as $mailBox) {
+        foreach ($mailBoxes as $mailBox)
+        {
             $aliases = $mailBox->xpath('mailname/alias');
 
-            for ($i = 0; $i < count($aliases); $i++) {
-                if ((string) $aliases[$i] === $alias) {
+            for ($i = 0; $i < count($aliases); $i++)
+            {
+                if ((string) $aliases[$i] === $alias)
+                {
                     return (string) $mailBox->mailname->name;
                 }
             }
@@ -236,5 +297,4 @@ APICALL;
 
         return false;
     }
-
 }

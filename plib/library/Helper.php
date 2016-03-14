@@ -22,7 +22,6 @@ class Modules_Harvard_Helper
         die($message);
     }
 
-
     /**
      * Generates an unique random hash based on the user ID and current timestamp.
      *

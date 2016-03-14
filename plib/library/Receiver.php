@@ -21,27 +21,32 @@ class Modules_Harvard_Receiver
         pm_Log::debug(print_r($data, true));
 
         $actionConfig = new Modules_Harvard_ActionConfig;
-        if (empty($actionConfig)) {
+
+        if (empty($actionConfig))
+        {
             return;
         }
 
-        if (!(isset($data['envelope_sender']) && isset($data['condition_name']))) {
-            return Modules_Harvard_Helper::error('Invalid request.', 400);
+        if (!(isset($data['envelope_sender']) && isset($data['condition_name'])))
+        {
+            Modules_Harvard_Helper::error('Invalid request.', 400);
         }
 
         $event = $data['condition_name'];
         $sender = $data['envelope_sender'];
 
-        if (preg_match('/(.*)\@(.*)/i', $data['envelope_sender'], $matches)) {
+        if (preg_match('/(.*)\@(.*)/i', $data['envelope_sender'], $matches))
+        {
             $username = $matches[1];
             $domain = $matches[2];
         }
 
-        $mailSettings = new Modules_Harvard_MailSettings();
+        $mailSettings = new Modules_Harvard_MailSettings;
 
-        foreach ($actionConfig as $item) {
-            if ($item->event == $event || $item->event == '*') {
-
+        foreach ($actionConfig as $item)
+        {
+            if ($item->event == $event || $item->event == '*')
+            {
                 pm_Log::debug("condition: $item->condition_name, domain: $domain");
 
                 $mailSettings = new Modules_Harvard_MailSettings;
