@@ -32,7 +32,7 @@ class Modules_Harvard_ActionConfig implements IteratorAggregate {
     /**
      * Retrieve the action configuration from key/val storage
      */
-    public static function getActionConfig()
+    private static function getActionConfig()
     {
         $json = pm_Settings::get(actionConfig);
 
@@ -48,7 +48,7 @@ class Modules_Harvard_ActionConfig implements IteratorAggregate {
     /**
      * Store the action configuration to the key/val storage
      */
-    public static function setActionConfig($config)
+    private static function setActionConfig($config)
     {
         pm_Log::debug(sprintf("setActionConfig -> %s", print_r($config, true)));
         pm_Settings::set(actionConfig, json_encode(self::cleanConfig($config)));
@@ -64,6 +64,23 @@ class Modules_Harvard_ActionConfig implements IteratorAggregate {
             }
         }
         return $config;
+    }
+
+    public static function getAvailableEvents() {
+        return [
+            'spamming',
+            'bad-recipients',
+            'bounce-rate',
+            'phishing',
+            'complaints',
+        ];
+    }
+
+    public static function getAvailableActions() {
+        return [
+            'block-sender',
+            'block-domain',
+        ];
     }
 
     /**

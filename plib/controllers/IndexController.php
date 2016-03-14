@@ -30,6 +30,8 @@ class IndexController extends pm_Controller_Action
     public function configurationAction() {
         $this->view->token = pm_Settings::get('authToken');
         $this->view->actionConfig = new Modules_Harvard_ActionConfig();
+        $this->view->availableEvents = Modules_Harvard_ActionConfig::getAvailableEvents();
+        $this->view->availableActions = Modules_Harvard_ActionConfig::getAvailableActions();
     }
 
     public function genkeyAction() {
