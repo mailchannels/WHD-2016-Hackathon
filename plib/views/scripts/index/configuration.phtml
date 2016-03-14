@@ -16,6 +16,7 @@ $entryPoint .=  '/modules/harvard/public/index.php';
 $entryPoint .= '?auth_token=' . $this->token;
 
 ?>
+<base href="<?php echo pm_Context::getBaseUrl() ?>"/>
 
 <h3><?php echo $this->lmsg('settings-api') ?></h3>
 <section>
@@ -70,14 +71,14 @@ $entryPoint .= '?auth_token=' . $this->token;
                 </td>
             </tr>
             </thead>
+
             <tbody>
             <?php
-
             foreach ($this->actionConfig as $item) {
                 echo "<tr>";
-                echo sprintf("<td>%s</td><td>%s</td>",
-                             Modules_Harvard_ActionConfig::eventDescription($item['event']),
-                             Modules_Harvard_ActionConfig::actionDescription($item['action']));
+                echo sprintf("<td>%s</td>", Modules_Harvard_ActionConfig::eventDescription($item['event']));
+                echo sprintf("<td>%s</td>",Modules_Harvard_ActionConfig::actionDescription($item['action']));
+                echo "<td><button title='{$this->lmsg('title-remove-action')}' class='btn' name='remove-event' value='{$item['event']}'><img class='glyphicon' src='img/glyphicons-208-remove.png'/></button></td>";
                 echo "</tr>";
             }
             ?>

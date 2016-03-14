@@ -27,6 +27,7 @@ $messages = array(
     'select-action' => 'Aktion',
     'select-action-block-domain' => 'Mailversand und -empfang für die Domain deaktivieren',
     'select-action-block-sender' => 'Postfach des Absenders deaktivieren',
+    'title-remove-action' => 'entfernen Aktion',
     'enable-domain-button' => 'Domain wieder aktivieren',
     'enable-mailbox-button' => 'Postfach wieder aktivieren',
     'message-suspendet-site' => 'Es wurden Mailkonten wegen Spamverdacht deaktiviert',
