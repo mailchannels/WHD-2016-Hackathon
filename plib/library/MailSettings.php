@@ -121,7 +121,7 @@ APICALL;
 
         $response = pm_ApiRpc::getService()->call($request);
 
-        $status = $response->mail->disable->result->status == "ok";
+        $status = $response->mail->{$action}->result->status == "ok";
 
         if ($status)
         {
@@ -138,10 +138,9 @@ APICALL;
         }
     }
 
-    function getMailDomainStatus($domains) {
-        if (is_null($domains))
-        {
-            return null;
+    private function getMailDomainStatus($domains) {
+        if( is_null($domains) ) {
+            return NULL;
         }
 
         if (empty($domains))
@@ -164,8 +163,8 @@ APICALL;
 
         $domain_results = array();
 
-        foreach ($results as $result)
-        {
+        $list_changed = false;
+        foreach($results as $result) {
             $site_id = $result->{'site-id'};
             $enabled = $result->prefs->mailservice == "true";
 
@@ -173,6 +172,13 @@ APICALL;
             {
                 array_push($domain_results, array('id' => "$site_id", 'domain' => $domains["$site_id"]));
             }
+            else {
+                $list_changed = true;
+            }
+        }
+
+        if( $list_changed ) {
+            Modules_Harvard_MailSettings::setDisabledDomains($domain_results);
         }
 
         return $domain_results;
@@ -250,15 +256,18 @@ APICALL;
 
             return null;
         }
+        array_push($domains, array( 'id' => $domain_id, 'domain' => $domain_name));
 
+        Modules_Harvard_MailSettings::setDisabledDomains($domains);
+    }
+
+    private function setDisabledDomains($domains) {
         $result = array();
 
         foreach ($domains as $domain)
         {
             $result[$domain['id']] = $domain['domain'];
         }
-
-        $result[(integer) $domain_id] = $domain_name;
 
         pm_Log::err("Setting domains: " . implode($result));
         pm_Settings::set(disabled_mail_domains, json_encode($result));

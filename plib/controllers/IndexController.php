@@ -50,6 +50,17 @@ class IndexController extends pm_Controller_Action
      */
     public function blockedAction()
     {
+        $mailSettings = new Modules_Harvard_MailSettings();
+        $this->view->blockedDomains = $mailSettings->getDisabledDomains();
+        if (isset($_POST['unblock']))
+        {
+            $mailSettings->enableMailDomain($_POST['unblock']);
+
+            $this->view->blockedDomains = array_filter($this->view-blockedDomains, function($i) {
+                $i['domain'] != $_POST['unblock'];
+            });
+        }
+
     }
 
     /**
