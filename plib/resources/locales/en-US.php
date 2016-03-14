@@ -28,6 +28,7 @@ $messages = array(
     'select-action-block-domain' => 'Block mail service for the sender\'s domain',
     'select-action-block-sender' => 'Disable mailbox of the sender',
     'title-remove-action' => 'Remove action',
+    'enable-domain-button' => 'Re-enable this domain',
     'message-suspended-site' => 'Some mail accounts have been suspended due to abuse',
     'enable-mailbox-button' => 'Re-enable this mailbox',
     'no-domains-blocked' => 'No domains are currently being blocked',
