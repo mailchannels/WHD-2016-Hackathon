@@ -9,8 +9,8 @@ echo $this->partial('style.phtml');
 echo $this->renderTabs($this->tabs);
 ?>
 
-<form method="post">
-<table cellspacing="10px" style="border-collapse: false;">
+<form method="post" class="list">
+<table class="harvard-table">
     <?php
 
     foreach( $this->blockedDomains as $blocked) {
