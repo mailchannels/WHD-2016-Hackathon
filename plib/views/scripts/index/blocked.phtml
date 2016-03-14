@@ -14,7 +14,7 @@ echo $this->renderTabs($this->tabs);
     <?php
 
     if( empty($this->blockedDomains) ) {
-        echo "<tr><td>No domains are currently being blocked</td></tr>";
+        echo "<tr><td>{$this->lmsg('no-domains-blocked')}</td></tr>";
     }
     else {
         foreach ($this->blockedDomains as $blocked) {
