@@ -27,13 +27,14 @@ class Modules_Harvard_Receiver
             return;
         }
 
-        if (!(isset($data['envelope_sender']) && isset($data['condition_name'])))
+        if (!(isset($data['envelope_sender']) && isset($data['condition_name']) && isset($data['condition_description'])))
         {
             Modules_Harvard_Helper::error('Invalid request.', 400);
         }
 
         $event = $data['condition_name'];
         $sender = $data['envelope_sender'];
+        $reason = $data['condition_description'];
 
         if (preg_match('/(.*)\@(.*)/i', $data['envelope_sender'], $matches))
         {
@@ -52,7 +53,7 @@ class Modules_Harvard_Receiver
 
                 switch($item['action']) {
                     case "block-domain":
-                        $mailSettings->disableMailDomain($domain);
+                        $mailSettings->disableMailDomain($domain, $reason);
                         break;
                     case "block-sender":
                         $mailSettings->disableMailUser($domain, $username);

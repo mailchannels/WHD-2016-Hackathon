@@ -58,13 +58,13 @@ class IndexController extends pm_Controller_Action
         $this->view->blockedDomains = $mailSettings->getDisabledDomains();
         if (isset($_POST['unblock']))
         {
-            $mailSettings->enableMailDomain($_POST['unblock']);
+            $domain = $_POST['unblock'];
+            $mailSettings->enableMailDomain($domain);
 
-            $this->view->blockedDomains = array_filter($this->view-blockedDomains, function($i) {
-                $i['domain'] != $_POST['unblock'];
+            $this->view->blockedDomains = array_filter($this->view->blockedDomains, function($i) {
+                return $i['domain'] != $_POST['unblock'];
             });
         }
-
     }
 
     /**

@@ -101,14 +101,14 @@ APICALL;
     }
 
     public function enableMailDomain($domain) {
-        $this->setMailDomainStatus($domain, enable);
+        $this->setMailDomainStatus($domain, enable, NULL);
     }
 
-    public function disableMailDomain($domain) {
-        $this->setMailDomainStatus($domain, disable);
+    public function disableMailDomain($domain, $reason) {
+        $this->setMailDomainStatus($domain, disable, $reason);
     }
 
-    private function setMailDomainStatus($domain, $action) {
+    private function setMailDomainStatus($domain, $action, $reason) {
         $site_id = $this->getIdFromDomain($domain);
 
         $request = <<<APICALL
@@ -129,7 +129,7 @@ APICALL;
 
             if ($action == disable)
             {
-                $this->recordDisabledDomain("$site_id", $domain);
+                $this->recordDisabledDomain("$site_id", $domain, $reason);
             }
         }
         else
@@ -170,7 +170,7 @@ APICALL;
 
             if (!$enabled)
             {
-                array_push($domain_results, array('id' => "$site_id", 'domain' => $domains["$site_id"]));
+                array_push($domain_results, $domains["$site_id"]);
             }
             else {
                 $list_changed = true;
@@ -251,7 +251,7 @@ APICALL;
         return $boxesNew;
     }
 
-    function recordDisabledDomain($domain_id, $domain_name) {
+    function recordDisabledDomain($domain_id, $domain_name, $reason) {
         $domains = $this->getDisabledDomains();
 
         if (is_null($domains))
@@ -260,7 +260,7 @@ APICALL;
 
             return null;
         }
-        array_push($domains, array( 'id' => $domain_id, 'domain' => $domain_name));
+        array_push($domains, array( 'id' => $domain_id, 'domain' => $domain_name, 'reason' => $reason));
 
         Modules_Harvard_MailSettings::setDisabledDomains($domains);
     }
@@ -270,10 +270,10 @@ APICALL;
 
         foreach ($domains as $domain)
         {
-            $result[$domain['id']] = $domain['domain'];
+            $result[$domain['id']] = $domain;
         }
 
-        pm_Log::err("Setting domains: " . implode($result));
+        pm_Log::debug("Setting domains: " . implode($result));
         pm_Settings::set(disabled_mail_domains, json_encode($result));
     }
 
