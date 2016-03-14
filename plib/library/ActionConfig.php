@@ -68,17 +68,18 @@ class Modules_Harvard_ActionConfig implements IteratorAggregate {
 
     public static function getAvailableEvents() {
         return [
-            'tag_is_spamming' => pm_Locale::lmsg('Sending Spam'),
-            'tag_bad_recipients' => pm_Locale::lmsg('Sending to invalid recipients'),
-            'tag_bounce_rate' => pm_Locale::lmsg('High bounce rate'),
-            'tag_phishing' => pm_Locale::lmsg('Sending Phish')
+            'spamming',
+            'bad-recipients',
+            'bounce-rate',
+            'phishing',
+            'complaints',
         ];
     }
 
     public static function getAvailableActions() {
         return [
-            'block_sender' => pm_Locale::lmsg('Block Sender'),
-            'block_domain' => pm_Locale::lmsg('Block Domain')
+            'block-sender',
+            'block-domain',
         ];
     }
 
